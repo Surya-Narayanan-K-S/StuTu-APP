@@ -3261,8 +3261,8 @@ html, body {
 
 .vip-metrics-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   position: relative;
   z-index: 2;
 }

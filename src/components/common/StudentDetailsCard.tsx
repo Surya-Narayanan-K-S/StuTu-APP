@@ -113,7 +113,7 @@ export const StudentDetailsCard: React.FC<StudentDetailsCardProps> = ({
         </div>
       )}
 
-      {/* 4 Academic Metrics Grid */}
+      {/* Academic Metrics Grid (Attendance, CGPA, NPTEL) */}
       {!isAdmin && (
         <div className="vip-metrics-grid">
           <div className="vip-metric-box" onClick={() => onOpenTab('attendance')}>
@@ -143,16 +143,6 @@ export const StudentDetailsCard: React.FC<StudentDetailsCardProps> = ({
             <div className="vip-metric-data">
               <span className="vip-metric-val">{dbMetrics.nptelCerts}</span>
               <span className="vip-metric-label">NPTEL</span>
-            </div>
-          </div>
-
-          <div className="vip-metric-box" onClick={() => onOpenTab('academics')}>
-            <div className="vip-metric-icon" style={{ background: 'rgba(236, 72, 153, 0.2)', color: '#f472b6' }}>
-              <Sparkles size={14} />
-            </div>
-            <div className="vip-metric-data">
-              <span className="vip-metric-val">{dbMetrics.arrears}</span>
-              <span className="vip-metric-label">Arrears</span>
             </div>
           </div>
         </div>

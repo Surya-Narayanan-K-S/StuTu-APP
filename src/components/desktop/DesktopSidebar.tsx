@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Home, Bell, Sparkles, BookOpen, Calendar, GraduationCap, Award, FileText,
-  UserCheck, Map, Inbox, Zap, Shield, Phone, User, LogOut, LogIn, ChevronRight
+  UserCheck, Map, Inbox, Zap, Shield, Phone, User, LogOut, LogIn, ChevronRight, Gamepad2
 } from 'lucide-react';
 import appLogo from '../../assets/app-logo.png';
 import type { UserProfile } from '../../App';
@@ -114,6 +114,9 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 
         {/* SECTION 4: CAREER & CAMPUS */}
         <div className="sidebar-group-title">🚀 CAREER &amp; CAMPUS</div>
+        <button className={`sidebar-nav-item ${currentTab === 'puzzle-games' ? 'active' : ''}`} onClick={() => onSelectTab('puzzle-games')}>
+          <Gamepad2 size={18} style={{ color: '#8b5cf6' }} /> <span>Mind Games</span>
+        </button>
         <button className={`sidebar-nav-item ${currentTab === 'career' ? 'active' : ''}`} onClick={() => onSelectTab('career')}>
           <Zap size={18} style={{ color: '#d97706' }} /> <span>Career Roadmaps</span>
         </button>

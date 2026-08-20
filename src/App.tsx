@@ -413,10 +413,10 @@ function App() {
             <UserCheck size={15} /> <span>Attendance</span>
           </button>
           <button
-            className={`desktop-nav-btn ${currentTab === 'career' ? 'active' : ''}`}
-            onClick={() => { setActiveBottomNav('career'); handleCardClick('career'); }}
+            className={`desktop-nav-btn ${currentTab === 'puzzle-games' ? 'active' : ''}`}
+            onClick={() => { setActiveBottomNav('puzzle-games'); handleCardClick('puzzle-games'); }}
           >
-            <Zap size={15} /> <span>Career</span>
+            <Gamepad2 size={15} /> <span>Mind Games</span>
           </button>
           <button
             className={`desktop-nav-btn ${currentTab === 'profile-details' ? 'active' : ''}`}
@@ -722,7 +722,7 @@ function App() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {[
                       { label: 'Period Attendance (1–7)', key: 'attendance', icon: <UserCheck size={15} />, color: '#ff5f1f', badge: 'RADAR' },
-                      { label: 'EEE Puzzle Quest & Games', key: 'puzzle-games', icon: <Gamepad2 size={15} />, color: '#8b5cf6', badge: 'HOT' },
+                      { label: 'Mind Games & Puzzles', key: 'puzzle-games', icon: <Gamepad2 size={15} />, color: '#8b5cf6', badge: 'HOT' },
                       { label: 'Career Skill Tree & GATE', key: 'career', icon: <Zap size={15} />, color: '#d97706', badge: 'TREE' },
                       { label: 'Campus & Lab Map', key: 'campus-map', icon: <Map size={15} />, color: '#2563eb' },
                       { label: 'Anonymous Suggestions', key: 'suggestion', icon: <Inbox size={15} />, color: '#ea580c' },
@@ -803,6 +803,53 @@ function App() {
                     </div>
                   </div>
 
+                  {/* ⚡ DIRECT SHORTCUTS: Apply OD & Timetable */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <button
+                      onClick={() => handleCardClick('od-form')}
+                      style={{
+                        background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                        border: '1.5px solid rgba(37, 99, 235, 0.25)',
+                        borderRadius: 14,
+                        padding: '12px 8px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(37, 99, 235, 0.08)',
+                        transition: 'transform 0.15s ease'
+                      }}
+                    >
+                      <div style={{ width: 34, height: 34, borderRadius: 10, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <FileText size={18} />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: '#1e3a8a' }}>Apply OD</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleCardClick('timetable')}
+                      style={{
+                        background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                        border: '1.5px solid rgba(217, 119, 6, 0.25)',
+                        borderRadius: 14,
+                        padding: '12px 8px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(217, 119, 6, 0.08)',
+                        transition: 'transform 0.15s ease'
+                      }}
+                    >
+                      <div style={{ width: 34, height: 34, borderRadius: 10, background: '#d97706', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Calendar size={18} />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: '#78350f' }}>Timetable</span>
+                    </button>
+                  </div>
+
                   {/* Mobile & Desktop Icon Grid Categories (Separated Folder Cards) */}
                   {filteredCategories.map((cat, idx) => (
                     <div key={idx} className="category-folder-card">
@@ -859,27 +906,6 @@ function App() {
                         <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>Power Electronics Lab</div>
                         <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>EEE Lab 2 · Dr. M. Arulkumar</div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Quick Action Tools Card */}
-                  <div style={{ background: 'linear-gradient(135deg, #0052cc 0%, #1e40af 100%)', borderRadius: 20, padding: 20, color: '#fff', boxShadow: '0 8px 24px rgba(0,82,204,0.2)' }}>
-                    <h3 style={{ fontSize: 13, fontWeight: 800, color: '#fff', margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Zap size={16} /> QUICK DESKTOP ACTIONS
-                    </h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                      <button onClick={() => handleCardClick('od-form')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', padding: '10px', borderRadius: 12, color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
-                        📄 Apply OD
-                      </button>
-                      <button onClick={() => handleCardClick('request-letters')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', padding: '10px', borderRadius: 12, color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
-                        ✉️ Bonafide / NOC
-                      </button>
-                      <button onClick={() => handleCardClick('lab-finder')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', padding: '10px', borderRadius: 12, color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
-                        🔬 Lab Finder
-                      </button>
-                      <button onClick={() => handleCardClick('cgpa-calc')} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', padding: '10px', borderRadius: 12, color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', textAlign: 'center' }}>
-                        📊 Target GPA
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -957,11 +983,11 @@ function App() {
           </button>
 
           <button
-            className={`bottom-tab-item ${currentTab === 'career' ? 'active' : ''}`}
-            onClick={() => { setActiveBottomNav('career'); handleCardClick('career'); }}
+            className={`bottom-tab-item ${currentTab === 'puzzle-games' ? 'active' : ''}`}
+            onClick={() => { setActiveBottomNav('puzzle-games'); handleCardClick('puzzle-games'); }}
           >
-            <Zap size={20} />
-            <span className="bottom-tab-label">Career</span>
+            <Gamepad2 size={20} />
+            <span className="bottom-tab-label">Mind Games</span>
           </button>
 
           <button

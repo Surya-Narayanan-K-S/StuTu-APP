@@ -113,16 +113,8 @@ export const ODForm: React.FC<ODFormProps> = ({
   };
 
   const validateForm = (): boolean => {
-    if (!eventName.trim()) {
-      setValidationError('Please enter the Name of the Event / Purpose (Mandatory).');
-      return false;
-    }
-    if (!eventDate.trim()) {
-      setValidationError('Please enter the Date and timing of the Event (Mandatory).');
-      return false;
-    }
-    if (!venue.trim()) {
-      setValidationError('Please enter the Venue (Mandatory).');
+    if (!eventName.trim() || !eventDate.trim() || !venue.trim()) {
+      setValidationError('Please enter all mandatory details.');
       return false;
     }
     setValidationError('');
@@ -186,7 +178,7 @@ export const ODForm: React.FC<ODFormProps> = ({
       doc.rect(10, y + 1.2, tw, 0.6, 'F');
     };
 
-    /* ── Field Underline Helper (Darker Lines) ──────────────── */
+    /* ── Field Underline Helper ────────────────────────────── */
     const field = (label: string, value: string, y: number) => {
       doc.setFont('Helvetica', 'bold').setFontSize(7.5).setTextColor(50, 50, 50);
       doc.text(label, 14, y);
@@ -216,11 +208,14 @@ export const ODForm: React.FC<ODFormProps> = ({
     /* ── 1. Requisition Details ────────────────────────────── */
     sectionHeader('1. Requisition Details', 44);
 
+    const hasFaculty = Boolean(facultyCoordinator.trim());
+    const cardH = hasFaculty ? 45 : 30;
+
     // Rounded card container box
     doc.setFillColor(250, 251, 253);
     doc.setDrawColor(220, 225, 230);
     doc.setLineWidth(0.3);
-    doc.roundedRect(10, 48, 128, 45, 2, 2, 'FD');
+    doc.roundedRect(10, 48, 128, cardH, 2, 2, 'FD');
 
     // Helper: draw a subtle row separator inside the card
     const rowSep = (y: number) => {
@@ -229,30 +224,38 @@ export const ODForm: React.FC<ODFormProps> = ({
       doc.line(12, y, 136, y);
     };
 
-    // Render Fields with separators between them
-    // First 3 details: Mandatory (Name of Event, Date & Timing, Venue)
-    // Last 2 details: Optional (Faculty Coordinator, Signature placeholder)
-    field('Name of the Event/Purpose: ', eventName, 55);
-    rowSep(59);
-    field('Date and timing of the Event: ', eventDate, 63);
-    rowSep(67);
-    field('Venue: ', venue, 71);
-    rowSep(75);
-    field('Faculty Co-ordinator: ', facultyCoordinator, 79);
-    rowSep(83);
+    // Render Fields
+    if (hasFaculty) {
+      field('Name of the Event/Purpose: ', eventName, 55);
+      rowSep(59);
+      field('Date and timing of the Event: ', eventDate, 63);
+      rowSep(67);
+      field('Venue: ', venue, 71);
+      rowSep(75);
+      field('Faculty Co-ordinator: ', facultyCoordinator, 79);
+      rowSep(83);
 
-    // Signature line inside card
-    doc.setFont('Helvetica', 'bold').setFontSize(7.5).setTextColor(50, 50, 50);
-    doc.text('Signature: ', 14, 87);
-    doc.setLineWidth(0.3).setDrawColor(100, 100, 100).setLineDashPattern([1, 1.5], 0);
-    doc.line(28, 88.2, 58, 88.2);
-    doc.setLineDashPattern([], 0);
+      // Signature line inside card
+      doc.setFont('Helvetica', 'bold').setFontSize(7.5).setTextColor(50, 50, 50);
+      doc.text('Signature: ', 14, 87);
+      doc.setLineWidth(0.3).setDrawColor(100, 100, 100).setLineDashPattern([1, 1.5], 0);
+      doc.line(28, 88.2, 58, 88.2);
+      doc.setLineDashPattern([], 0);
+    } else {
+      // Compact layout without Faculty Coordinator or Signature if left blank
+      field('Name of the Event/Purpose: ', eventName, 55);
+      rowSep(60);
+      field('Date and timing of the Event: ', eventDate, 64);
+      rowSep(69);
+      field('Venue: ', venue, 73);
+    }
 
     /* ── 2. Student Details ────────────────────────────────── */
-    sectionHeader('2. Student Details', 99);
+    const section2TitleY = hasFaculty ? 99 : 85;
+    sectionHeader('2. Student Details', section2TitleY);
 
     const count = Math.max(1, students.length);
-    const tableTop = 104;
+    const tableTop = section2TitleY + 5;
     // Scale row height gracefully so it fits cleanly on A5 without overlapping signatures
     const rowH = count <= 4 ? 7.5 : count <= 6 ? 6.8 : 5.8;
     const cols = [10, 26, 46, 18, 28]; // widths in mm (sum = 128)

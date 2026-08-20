@@ -904,7 +904,7 @@ function App() {
                 {currentTab === 'profile-details' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="profile" currentUser={currentUser} onUpdateUser={(updated) => setCurrentUser(updated)} />}
                 {currentTab === 'profile' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="documents" />}
                 {currentTab === 'certificates' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="certificates" />}
-                {currentTab === 'od-form' && <ODForm onBack={() => setCurrentTab(null)} />}
+                {currentTab === 'od-form' && <ODForm currentUser={currentUser} onBack={() => setCurrentTab(null)} />}
                 {currentTab === 'request-letters' && <RequestLetters onBack={() => setCurrentTab(null)} currentEmail={currentUser?.email || 'student@eee.com'} currentName={currentUser?.name || 'Nithin Annamalai'} currentRollNo={currentUser?.rollNo || '7377221EE001'} isAdmin={isAdmin} />}
                 {currentTab === 'lab-finder' && <LabSeatFinder onBack={() => setCurrentTab(null)} rollNo={currentUser?.rollNo || '7377221EE001'} />}
                 {currentTab === 'cgpa-calc' && <GpaCalculator onBack={() => setCurrentTab(null)} />}

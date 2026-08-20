@@ -72,7 +72,7 @@ export const StudentDetailsCard: React.FC<StudentDetailsCardProps> = ({
     <div className="mobile-vip-student-card">
       {/* Top Identity Header */}
       <div className="vip-card-header">
-        <div className="vip-avatar-wrap" onClick={onOpenProfile}>
+        <div className="vip-avatar-wrap">
           <div className="vip-avatar-circle">
             {name.charAt(0)}
           </div>

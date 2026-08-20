@@ -855,7 +855,6 @@ function App() {
                     <div key={idx} className="category-folder-card">
                       <div className="mobile-section-header">
                         <span className="mobile-section-title">{cat.title}</span>
-                        <span className="category-count-badge">{cat.items.length} Modules</span>
                       </div>
                       <div className="mobile-grid-4col">
                         {cat.items.map((item) => (

@@ -36,7 +36,6 @@ export const APP_CATEGORIES: RouteCategory[] = [
       { key: 'profile', label: 'Documents', icon: React.createElement(BookOpen, { size: 24 }), color: '#0052cc', bg: 'rgba(0, 82, 204, 0.12)' },
       { key: 'certificates', label: 'Certificates', icon: React.createElement(Award, { size: 24 }), color: '#be185d', bg: 'rgba(190, 24, 93, 0.12)' },
       { key: 'od-form', label: 'OD Form', icon: React.createElement(FileText, { size: 24 }), color: '#4f46e5', bg: 'rgba(79, 70, 229, 0.12)' },
-      { key: 'request-letters', label: 'Bonafide / NOC', icon: React.createElement(FileText, { size: 24 }), color: '#0d9488', bg: 'rgba(13, 148, 136, 0.12)' },
     ]
   },
   {

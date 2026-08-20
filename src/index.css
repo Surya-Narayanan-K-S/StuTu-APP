@@ -3123,7 +3123,6 @@ html, body {
 
 .vip-avatar-wrap {
   position: relative;
-  cursor: pointer;
 }
 
 .vip-avatar-circle {
@@ -3139,11 +3138,6 @@ html, body {
   font-weight: 900;
   color: #ffffff;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-  transition: transform 0.2s ease;
-}
-
-.vip-avatar-wrap:hover .vip-avatar-circle {
-  transform: scale(1.06);
 }
 
 .vip-online-badge {

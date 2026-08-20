@@ -53,6 +53,7 @@ export const ODForm: React.FC<ODFormProps> = ({
   const [venue, setVenue] = useState('');
   const [facultyCoordinator, setFacultyCoordinator] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   // Student Details state
   const [students, setStudents] = useState<StudentDetail[]>([
@@ -111,6 +112,23 @@ export const ODForm: React.FC<ODFormProps> = ({
     });
   };
 
+  const validateForm = (): boolean => {
+    if (!eventName.trim()) {
+      setValidationError('Please enter the Name of the Event / Purpose (Mandatory).');
+      return false;
+    }
+    if (!eventDate.trim()) {
+      setValidationError('Please enter the Date and timing of the Event (Mandatory).');
+      return false;
+    }
+    if (!venue.trim()) {
+      setValidationError('Please enter the Venue (Mandatory).');
+      return false;
+    }
+    setValidationError('');
+    return true;
+  };
+
   /* ── Shared PDF Builder ─────────────────────────────────── */
   const buildPDF = async (doc: jsPDF) => {
     /* Header image occupying very top part: y = 5 instead of 15 */
@@ -136,16 +154,21 @@ export const ODForm: React.FC<ODFormProps> = ({
     doc.setFillColor(220, 160, 40);
     doc.rect(10, bannerY + bannerH - 1.2, 128, 1.2, 'F');
 
-    // Banner Text
+    // Banner Text - with (INTERNAL) or (EXTERNAL) near OD Requisition Form Title
+    const odTag = odType === 'Internal OD' ? '(INTERNAL)' : '(EXTERNAL)';
     doc.setTextColor(255, 255, 255);
     if (odSubCategory === 'SAC OD') {
       doc.setFont('Helvetica', 'bold').setFontSize(9.5);
       doc.text('STUDENT AFFAIRS CLUB', 74, bannerY + 4.5, { align: 'center' });
       doc.setFont('Helvetica', 'normal').setFontSize(6.5);
-      doc.text('STUDENT ON-DUTY REQUISITION FORM', 74, bannerY + 7.8, { align: 'center' });
+      doc.text(`STUDENT ON-DUTY REQUISITION FORM ${odTag}`, 74, bannerY + 7.8, { align: 'center' });
     } else {
       doc.setFont('Helvetica', 'bold').setFontSize(8.5);
-      doc.text(formTitle.trim().toUpperCase(), 74, bannerY + 4.5, { align: 'center' });
+      const cleanTitle = formTitle.trim().toUpperCase();
+      const titleWithTag = cleanTitle.includes('(INTERNAL)') || cleanTitle.includes('(EXTERNAL)')
+        ? cleanTitle
+        : `${cleanTitle} ${odTag}`;
+      doc.text(titleWithTag, 74, bannerY + 4.5, { align: 'center' });
       doc.setFont('Helvetica', 'normal').setFontSize(6.5);
       doc.text(deptName.trim().toUpperCase(), 74, bannerY + 7.8, { align: 'center' });
     }
@@ -207,6 +230,8 @@ export const ODForm: React.FC<ODFormProps> = ({
     };
 
     // Render Fields with separators between them
+    // First 3 details: Mandatory (Name of Event, Date & Timing, Venue)
+    // Last 2 details: Optional (Faculty Coordinator, Signature placeholder)
     field('Name of the Event/Purpose: ', eventName, 55);
     rowSep(59);
     field('Date and timing of the Event: ', eventDate, 63);
@@ -347,11 +372,12 @@ export const ODForm: React.FC<ODFormProps> = ({
 
   /* ── Download PDF Action ───────────────────────────────── */
   const handleDownloadPDF = async () => {
+    if (!validateForm()) return;
     setGenerating(true);
     try {
       const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a5' });
       await buildPDF(doc);
-      doc.save(`OD_Form_${Date.now()}.pdf`);
+      doc.save(`OD_Form_${odType === 'Internal OD' ? 'Internal' : 'External'}_${Date.now()}.pdf`);
     } catch (err) {
       console.error('PDF generation error:', err);
     } finally {
@@ -361,6 +387,7 @@ export const ODForm: React.FC<ODFormProps> = ({
 
   /* ── Preview PDF Action ────────────────────────────────── */
   const handlePreviewPDF = async () => {
+    if (!validateForm()) return;
     setGenerating(true);
     try {
       const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a5' });
@@ -416,7 +443,7 @@ export const ODForm: React.FC<ODFormProps> = ({
         </button>
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
-            OD Form Request
+            OD Form Request ({odType === 'Internal OD' ? 'Internal' : 'External'})
           </h2>
           <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: 0 }}>
             Fill details and generate the On-Duty request PDF
@@ -438,8 +465,24 @@ export const ODForm: React.FC<ODFormProps> = ({
         {/* Section label */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid var(--card-border)', paddingBottom: 10 }}>
           <FileText size={16} color="#4f46e5" />
-          <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-primary)' }}>1. Requisition Details</span>
+          <span style={{ fontWeight: 800, fontSize: 13, color: 'var(--text-primary)' }}>
+            1. Requisition Details ({odType === 'Internal OD' ? 'Internal' : 'External'})
+          </span>
         </div>
+
+        {validationError && (
+          <div style={{
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: 8,
+            padding: '10px 12px',
+            color: '#ef4444',
+            fontSize: 12,
+            fontWeight: 600
+          }}>
+            ⚠️ {validationError}
+          </div>
+        )}
 
         {/* OD Category */}
         <div>
@@ -452,8 +495,8 @@ export const ODForm: React.FC<ODFormProps> = ({
             }}
             style={inputStyle}
           >
-            <option value="Internal OD">Internal OD</option>
-            <option value="External OD">External OD</option>
+            <option value="Internal OD">Internal OD (Internal)</option>
+            <option value="External OD">External OD (External)</option>
           </select>
         </div>
 
@@ -498,55 +541,71 @@ export const ODForm: React.FC<ODFormProps> = ({
           </>
         )}
 
-        {/* Event Name */}
+        {/* Event Name (Mandatory 1) */}
         <div>
-          <label style={labelStyle}>Name of the Event / Purpose</label>
+          <label style={labelStyle}>
+            Name of the Event / Purpose <span style={{ color: '#ef4444' }}>*</span>
+          </label>
           <input
             type="text"
             value={eventName}
-            onChange={e => setEventName(e.target.value)}
+            onChange={e => {
+              setEventName(e.target.value);
+              if (validationError) setValidationError('');
+            }}
             placeholder="e.g. Science Exhibition, Paper Presentation"
             style={inputStyle}
             required
           />
         </div>
 
-        {/* Date & Timing */}
+        {/* Date & Timing (Mandatory 2) */}
         <div>
-          <label style={labelStyle}>Date and Timing of the Event</label>
+          <label style={labelStyle}>
+            Date and Timing of the Event <span style={{ color: '#ef4444' }}>*</span>
+          </label>
           <input
             type="text"
             value={eventDate}
-            onChange={e => setEventDate(e.target.value)}
+            onChange={e => {
+              setEventDate(e.target.value);
+              if (validationError) setValidationError('');
+            }}
             placeholder="e.g. 15th Aug 2026, 9:00 AM – 5:00 PM"
             style={inputStyle}
             required
           />
         </div>
 
-        {/* Venue */}
+        {/* Venue (Mandatory 3) */}
         <div>
-          <label style={labelStyle}>Venue</label>
+          <label style={labelStyle}>
+            Venue <span style={{ color: '#ef4444' }}>*</span>
+          </label>
           <input
             type="text"
             value={venue}
-            onChange={e => setVenue(e.target.value)}
+            onChange={e => {
+              setVenue(e.target.value);
+              if (validationError) setValidationError('');
+            }}
             placeholder="e.g. SREC Main Auditorium, PSG College"
             style={inputStyle}
             required
           />
         </div>
 
-        {/* Faculty Co-ordinator */}
+        {/* Faculty Co-ordinator (Optional) */}
         <div>
-          <label style={labelStyle}>Faculty Co-ordinator</label>
+          <label style={labelStyle}>
+            Faculty Co-ordinator <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-muted)' }}>(Optional)</span>
+          </label>
           <input
             type="text"
             value={facultyCoordinator}
             onChange={e => setFacultyCoordinator(e.target.value)}
-            placeholder="e.g. Dr. K. Balamurugan"
+            placeholder="e.g. Dr. K. Balamurugan (leave blank if not applicable)"
             style={inputStyle}
-            required
           />
         </div>
 

@@ -2,11 +2,15 @@ import React from 'react';
 import { ArrowRight, ShieldCheck, Award, GraduationCap, Zap, UserCheck, FileText, BookOpen } from 'lucide-react';
 import appLogo from '../../assets/app-logo.png';
 
+import type { UserProfile } from '../../App';
+
 interface MobileLandingPageProps {
   onOpenLogin: (isSignUp: boolean) => void;
+  demoProfiles?: UserProfile[];
+  onDemoLogin?: (profile: UserProfile) => void;
 }
 
-export const MobileLandingPage: React.FC<MobileLandingPageProps> = ({ onOpenLogin }) => {
+export const MobileLandingPage: React.FC<MobileLandingPageProps> = ({ onOpenLogin, demoProfiles, onDemoLogin }) => {
   return (
     <div className="mobile-landing-wrapper">
       {/* ── Top Hero with Scenic Nature Background & Curved Wave ── */}
@@ -37,6 +41,44 @@ export const MobileLandingPage: React.FC<MobileLandingPageProps> = ({ onOpenLogi
             Create Account
           </button>
         </div>
+
+        {/* ⚡ Quick Dev Demo 1-Click Access on Landing Page */}
+        {demoProfiles && onDemoLogin && (
+          <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 5, position: 'relative' }}>
+            <span style={{ fontSize: 9.5, fontWeight: 900, color: 'rgba(255,255,255,0.85)', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+              ⚡ QUICK DEV DEMO ACCESS
+            </span>
+            <div style={{ display: 'flex', gap: 8, width: '100%', maxWidth: 320 }}>
+              {demoProfiles.map((p, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => onDemoLogin(p)}
+                  style={{
+                    flex: 1,
+                    background: p.role === 'teacher' ? 'rgba(234, 88, 12, 0.85)' : 'rgba(37, 99, 235, 0.85)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1.5px solid rgba(255,255,255,0.4)',
+                    color: '#ffffff',
+                    padding: '8px 6px',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    boxShadow: '0 4px 14px rgba(0,0,0,0.25)'
+                  }}
+                >
+                  <span style={{ fontSize: 10, fontWeight: 900 }}>
+                    {p.role === 'teacher' ? '👨‍🏫 Demo Staff' : '🎓 Demo Student'}
+                  </span>
+                  <span style={{ fontSize: 8.5, opacity: 0.9 }}>
+                    {p.name.split(' ')[0]}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Curved Wave Mask */}
         <div className="mobile-landing-wave">

@@ -27,7 +27,8 @@ import {
   DesktopSidebar,
   DesktopVisionaDashboard,
   MobileLandingPage,
-  PuzzleGames
+  PuzzleGames,
+  StudentManager
 } from './components';
 
 import {
@@ -82,8 +83,22 @@ const USER_PROFILES: UserProfile[] = [
 
 function App() {
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 992);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('eee_active_user');
+      return !!saved;
+    } catch {
+      return false;
+    }
+  });
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem('eee_active_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   const [showSignInPage, setShowSignInPage] = useState(false);
   const [authIsSignUp, setAuthIsSignUp] = useState(false);
 
@@ -93,13 +108,45 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [currentTab, setCurrentTab] = useState<string | null>(null);
+  const [currentTab, setCurrentTab] = useState<string | null>(() => {
+    try {
+      const hash = window.location.hash.replace('#', '').trim();
+      return hash || null;
+    } catch {
+      return null;
+    }
+  });
   const [isClosingModal, setIsClosingModal] = useState(false);
   const [activeBottomNav, setActiveBottomNav] = useState('home');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [academicInitEdit, setAcademicInitEdit] = useState(false);
+
+  // Sync window.location.hash with currentTab for seamless refresh & back navigation
+  useEffect(() => {
+    const syncHashToTab = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      setCurrentTab(hash || null);
+      if (!hash) {
+        setActiveBottomNav('home');
+      } else if (hash === 'academics' || hash === 'courses') {
+        setActiveBottomNav('academics');
+      } else if (hash === 'attendance') {
+        setActiveBottomNav('attendance');
+      } else if (hash === 'puzzle-games') {
+        setActiveBottomNav('puzzle-games');
+      } else if (hash === 'profile-details' || hash === 'profile') {
+        setActiveBottomNav('profile');
+      }
+    };
+    window.addEventListener('hashchange', syncHashToTab);
+    window.addEventListener('popstate', syncHashToTab);
+    return () => {
+      window.removeEventListener('hashchange', syncHashToTab);
+      window.removeEventListener('popstate', syncHashToTab);
+    };
+  }, []);
 
   useEffect(() => {
     loadAnnouncements();
@@ -156,15 +203,18 @@ function App() {
               const saved = localStorage.getItem('eee_profile_extra_' + email);
               if (saved) {
                 const extras = JSON.parse(saved) as Partial<UserProfile>;
-                setCurrentUser({ ...userProfile, ...extras, email, role });
+                const merged = { ...userProfile, ...extras, email, role };
+                setCurrentUser(merged);
+                localStorage.setItem('eee_active_user', JSON.stringify(merged));
               } else {
                 setCurrentUser(userProfile);
+                localStorage.setItem('eee_active_user', JSON.stringify(userProfile));
               }
             } catch {
               setCurrentUser(userProfile);
+              localStorage.setItem('eee_active_user', JSON.stringify(userProfile));
             }
             setIsAuthenticated(true);
-            setDismissedSignIn(true);
           }
         } catch (err) {
           console.warn('Failed to fetch Supabase session on mount:', err);
@@ -172,23 +222,34 @@ function App() {
       }
     };
     checkSession();
+  }, []);
 
-    // Hardware Back Button Handler
+  // Hardware Back Button Handler for Android / Capacitor
+  useEffect(() => {
     const backListener = CapApp.addListener('backButton', () => {
-      setCurrentTab(prev => {
-        if (prev !== null) {
-          setActiveBottomNav('home');
-          return null;
+      if (isDrawerOpen) {
+        setIsDrawerOpen(false);
+        return;
+      }
+      if (showSignInPage) {
+        setShowSignInPage(false);
+        return;
+      }
+      if (window.location.hash || currentTab !== null) {
+        if (window.location.hash) {
+          window.history.back();
+        } else {
+          setCurrentTab(null);
         }
-        CapApp.exitApp();
-        return prev;
-      });
+        return;
+      }
+      CapApp.exitApp();
     });
 
     return () => {
       backListener.then((l: any) => l?.remove?.());
     };
-  }, []);
+  }, [isDrawerOpen, showSignInPage, currentTab]);
 
   const loadAnnouncements = async () => {
     const list = await dbService.getAnnouncements();
@@ -207,17 +268,16 @@ function App() {
 
   const handleLoginSuccess = (userProfile: UserProfile) => {
     // Merge any locally saved personal details (phone, dob, etc.)
+    let fullProfile = userProfile;
     try {
       const saved = localStorage.getItem('eee_profile_extra_' + userProfile.email);
       if (saved) {
         const extras = JSON.parse(saved) as Partial<UserProfile>;
-        setCurrentUser({ ...userProfile, ...extras, email: userProfile.email, role: userProfile.role });
-      } else {
-        setCurrentUser(userProfile);
+        fullProfile = { ...userProfile, ...extras, email: userProfile.email, role: userProfile.role };
       }
-    } catch {
-      setCurrentUser(userProfile);
-    }
+    } catch { }
+    setCurrentUser(fullProfile);
+    localStorage.setItem('eee_active_user', JSON.stringify(fullProfile));
     setIsAuthenticated(true);
     setShowSignInPage(false);
   };
@@ -231,9 +291,11 @@ function App() {
         console.warn('Failed to sign out from Supabase:', err);
       }
     }
+    localStorage.removeItem('eee_active_user');
     setCurrentUser(null);
     setIsAuthenticated(false);
     setCurrentTab(null);
+    window.location.hash = '';
     setIsDrawerOpen(false);
   };
 
@@ -242,21 +304,52 @@ function App() {
   const handleCloseModal = () => {
     if (isClosingModal) return;
     setIsClosingModal(true);
+    setCurrentTab(null);
+    setActiveBottomNav('home');
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
     setTimeout(() => {
-      setCurrentTab(null);
       setIsClosingModal(false);
-    }, 240);
+    }, 120);
   };
+
+  // Capacitor Android system back button integration
+  useEffect(() => {
+    let listener: any = null;
+    import('@capacitor/app')
+      .then(({ App: CapApp }) => {
+        listener = CapApp.addListener('backButton', () => {
+          if (currentTab || isDrawerOpen || showSearch || showSignInPage) {
+            handleCloseModal();
+            setIsDrawerOpen(false);
+            setShowSearch(false);
+            setShowSignInPage(false);
+          } else {
+            CapApp.exitApp();
+          }
+        });
+      })
+      .catch(() => {});
+
+    return () => {
+      if (listener && typeof listener.remove === 'function') {
+        listener.remove();
+      }
+    };
+  }, [currentTab, isDrawerOpen, showSearch, showSignInPage]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && currentTab) {
+      if (e.key === 'Escape' && (currentTab || isDrawerOpen || showSearch)) {
         handleCloseModal();
+        setIsDrawerOpen(false);
+        setShowSearch(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentTab, isClosingModal]);
+  }, [currentTab, isDrawerOpen, showSearch, isClosingModal]);
 
   const handleCardClick = (titleKey: string) => {
     if (!isAuthenticated) {
@@ -265,7 +358,11 @@ function App() {
     }
     setAcademicInitEdit(false);
     if (titleKey === 'home') {
-      setCurrentTab(null);
+      if (window.location.hash) {
+        window.location.hash = '';
+      } else {
+        setCurrentTab(null);
+      }
       setActiveBottomNav('home');
       setIsDrawerOpen(false);
       return;
@@ -277,6 +374,7 @@ function App() {
       return;
     }
     setIsClosingModal(false);
+    window.location.hash = titleKey;
     setCurrentTab(titleKey);
     setIsDrawerOpen(false);
   };
@@ -285,11 +383,45 @@ function App() {
   // Mobile & Desktop App Categories (Loaded from src/routes/appRoutes.ts)
   const appCategories = useMemo(() => APP_CATEGORIES, []);
 
+  // Search aliases so common terms resolve correctly
+  const SEARCH_ALIASES: Record<string, string[]> = {
+    ai: ['ai', 'tutor', 'chat', 'bot', 'assistant'],
+    courses: ['syllabus', 'course', 'subject', 'curriculum'],
+    calendar: ['calendar', 'schedule', 'academic calendar', 'holiday'],
+    academics: ['cgpa', 'gpa', 'marks', 'grade', 'score', 'result'],
+    'cgpa-calc': ['cgpa', 'gpa', 'calculator', 'calc', 'grade'],
+    nptel: ['nptel', 'online course', 'mooc', 'swayam'],
+    timetable: ['timetable', 'time table', 'class', 'period', 'schedule'],
+    profile: ['document', 'docs', 'bonafide', 'file'],
+    certificates: ['certificate', 'achievement', 'award'],
+    attendance: ['attendance', 'absent', 'present', 'od'],
+    'lab-finder': ['lab', 'seat', 'laboratory', 'computer'],
+    suggestion: ['suggestion', 'feedback', 'complaint'],
+    career: ['career', 'roadmap', 'placement', 'job', 'internship'],
+    'campus-map': ['campus', 'map', 'location', 'block', 'building'],
+    'college-rules': ['rules', 'regulation', 'policy', 'discipline'],
+    faculty: ['faculty', 'teacher', 'staff', 'professor', 'contact', 'phone'],
+  };
+
+  const itemMatchesSearch = (item: { key: string; label: string }, q: string) => {
+    const lq = q.toLowerCase().trim();
+    if (!lq) return true;
+    if (item.label.toLowerCase().includes(lq)) return true;
+    if (item.key.toLowerCase().includes(lq)) return true;
+    const aliases = SEARCH_ALIASES[item.key] || [];
+    return aliases.some(a => a.includes(lq) || lq.includes(a));
+  };
+
+  // Flat list of all matching items for the dropdown overlay
+  const searchResults = searchQuery.trim()
+    ? appCategories.flatMap(cat => cat.items.filter(item => itemMatchesSearch(item, searchQuery)))
+    : [];
+
   // Filter items if search is active
   const filteredCategories = searchQuery.trim()
     ? appCategories.map(cat => ({
       ...cat,
-      items: cat.items.filter(item => item.label.toLowerCase().includes(searchQuery.toLowerCase()))
+      items: cat.items.filter(item => itemMatchesSearch(item, searchQuery))
     })).filter(cat => cat.items.length > 0)
     : appCategories;
 
@@ -311,6 +443,8 @@ function App() {
             setAuthIsSignUp(Boolean(isSignUp));
             setShowSignInPage(true);
           }}
+          demoProfiles={USER_PROFILES}
+          onDemoLogin={(profile) => handleLoginSuccess(profile)}
         />
       );
     }
@@ -322,6 +456,8 @@ function App() {
               setAuthIsSignUp(Boolean(isSignUp));
               setShowSignInPage(true);
             }}
+            demoProfiles={USER_PROFILES}
+            onDemoLogin={(profile) => handleLoginSuccess(profile)}
           />
         </div>
       );
@@ -345,9 +481,21 @@ function App() {
         <DesktopSidebar
           currentTab={currentTab}
           activeBottomNav={activeBottomNav}
-          onSelectTab={(tab) => { setCurrentTab(tab); if (!tab) setActiveBottomNav('home'); }}
+          onSelectTab={(tab) => {
+            if (tab) {
+              handleCardClick(tab);
+            } else {
+              if (window.location.hash) {
+                window.location.hash = '';
+              } else {
+                setCurrentTab(null);
+              }
+              setActiveBottomNav('home');
+            }
+          }}
           isAuthenticated={isAuthenticated}
           currentUser={currentUser}
+          isAdmin={isAdmin}
           onOpenSignIn={() => setShowSignInPage(true)}
           onLogout={handleLogout}
         />
@@ -433,18 +581,86 @@ function App() {
 
         {/* Quick Search Overlay Bar */}
         {showSearch && (
-          <div style={{ padding: '8px 14px', background: 'var(--bg-primary)', borderBottom: '1px solid var(--card-border)', display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Search size={16} style={{ color: 'var(--text-muted)' }} />
-            <input
-              type="text"
-              placeholder="Search features (e.g. attendance, cgpa, faculty)..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              autoFocus
-              style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 16, color: 'var(--text-main)' }}
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+          <div style={{ position: 'relative' }}>
+            <div style={{ padding: '8px 14px', background: 'var(--bg-primary)', borderBottom: '1px solid var(--card-border)', display: 'flex', gap: 8, alignItems: 'center' }}>
+              <Search size={16} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+              <input
+                type="text"
+                placeholder="Search features (e.g. attendance, cgpa, faculty)..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && searchResults.length > 0) {
+                    handleCardClick(searchResults[0].key);
+                    setSearchQuery('');
+                    setShowSearch(false);
+                  }
+                  if (e.key === 'Escape') { setShowSearch(false); setSearchQuery(''); }
+                }}
+                autoFocus
+                style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 15, color: 'var(--text-main)' }}
+              />
+              {searchQuery ? (
+                <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 2px' }}>✕</button>
+              ) : null}
+              <button onClick={() => { setShowSearch(false); setSearchQuery(''); }} style={{ background: 'none', border: 'none', color: 'var(--accent-blue)', cursor: 'pointer', fontSize: 12, fontWeight: 700, padding: '0 4px' }}>Done</button>
+            </div>
+
+            {/* Instant search results dropdown */}
+            {searchQuery.trim() && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                background: '#ffffff',
+                border: '1px solid var(--card-border)',
+                borderTop: 'none',
+                borderRadius: '0 0 16px 16px',
+                zIndex: 9999,
+                boxShadow: '0 12px 32px rgba(0,0,0,0.14)',
+                maxHeight: '60vh',
+                overflowY: 'auto'
+              }}>
+                {searchResults.length === 0 ? (
+                  <div style={{ padding: '20px 16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+                    No features found for &ldquo;<strong>{searchQuery}</strong>&rdquo;
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ padding: '6px 14px 2px', fontSize: 10, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                      {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
+                    </div>
+                    {searchResults.map(item => (
+                      <button
+                        key={item.key}
+                        onClick={() => { handleCardClick(item.key); setSearchQuery(''); setShowSearch(false); }}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 12,
+                          padding: '11px 16px',
+                          border: 'none',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          borderBottom: '1px solid var(--card-border)'
+                        }}
+                      >
+                        <div style={{ width: 34, height: 34, borderRadius: 10, background: item.bg, color: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {item.icon}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>{item.label}</div>
+                          <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Tap to open</div>
+                        </div>
+                        <span style={{ marginLeft: 'auto', fontSize: 18, color: 'var(--text-muted)' }}>›</span>
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -761,6 +977,41 @@ function App() {
                   </div>
                 </div>
 
+                {/* Section: Faculty Admin (Shown if isAdmin) */}
+                {isAdmin && (
+                  <div style={{ background: '#eff6ff', borderRadius: 18, padding: '12px 10px', border: '1.5px solid rgba(37,99,235,0.25)', boxShadow: '0 4px 12px rgba(37,99,235,0.06)' }}>
+                    <span style={{ fontSize: 10, fontWeight: 900, color: '#1d4ed8', letterSpacing: 0.8, textTransform: 'uppercase', display: 'block', padding: '0 6px 8px' }}>
+                      👨‍🏫 Faculty Administration
+                    </span>
+                    <div
+                      onClick={() => { handleCardClick('student-manager'); setIsDrawerOpen(false); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 10px',
+                        borderRadius: 12,
+                        cursor: 'pointer',
+                        background: currentTab === 'student-manager' ? 'rgba(37,99,235,0.18)' : '#ffffff',
+                        border: '1px solid rgba(37,99,235,0.15)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <UserCheck size={16} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#1e3a8a' }}>Student Database</div>
+                          <div style={{ fontSize: 10, color: '#3b82f6' }}>View &amp; Edit All Students</div>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 900, background: '#2563eb', color: '#ffffff', padding: '2px 6px', borderRadius: 6 }}>
+                        VIP
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* SREC Drawer Footer Branding */}
                 <div style={{ textAlign: 'center', padding: '12px 0 6px', color: '#94a3b8', fontSize: 10.5, fontWeight: 700 }}>
                   <span>Sri Ramakrishna Engineering College</span>
@@ -879,6 +1130,37 @@ function App() {
                     </button>
                   </div>
 
+                  {/* 👨‍🏫 FACULTY ADMIN QUICK BAR (Shown only to Admin/Staff) */}
+                  {isAdmin && (
+                    <div
+                      onClick={() => handleCardClick('student-manager')}
+                      style={{
+                        background: 'linear-gradient(135deg, #1e3a8a 0%, #0052cc 100%)',
+                        borderRadius: 14,
+                        padding: '12px 16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 14px rgba(0, 82, 204, 0.25)',
+                        color: '#ffffff'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <UserCheck size={20} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 900 }}>👥 Student Database &amp; Dossiers</div>
+                          <div style={{ fontSize: 10.5, opacity: 0.85 }}>Search, edit, add, or delete department students</div>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 10, fontWeight: 900, background: '#ffffff', color: '#0052cc', padding: '3px 8px', borderRadius: 99 }}>
+                        MANAGE
+                      </span>
+                    </div>
+                  )}
+
                   {/* Mobile & Desktop Icon Grid Categories (Separated Folder Cards) */}
                   {filteredCategories.map((cat, idx) => (
                     <div key={idx} className="category-folder-card">
@@ -907,36 +1189,6 @@ function App() {
                     </div>
                   ))}
                 </div>
-
-                {/* Desktop Right Analytics & Schedule Sidebar Column */}
-                <div className="desktop-widgets-col">
-                  {/* Today's Schedule Card */}
-                  <div style={{ background: 'var(--bg-primary)', borderRadius: 20, padding: 20, border: '1px solid var(--card-border)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                      <h3 style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <Calendar size={16} style={{ color: 'var(--accent-blue)' }} /> TODAY'S SCHEDULE
-                      </h3>
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#059669', background: 'rgba(5,150,105,0.1)', padding: '2px 8px', borderRadius: 10 }}>SEM VI</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <div style={{ background: 'rgba(0,82,204,0.06)', padding: '10px 12px', borderRadius: 12, borderLeft: '3px solid var(--accent-blue)' }}>
-                        <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--accent-blue)' }}>09:00 AM - 10:00 AM · PERIOD 1</div>
-                        <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>EE8601 Power Systems</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Room EB-204 · Dr. K. Senthilkumar</div>
-                      </div>
-                      <div style={{ background: 'var(--bg-secondary)', padding: '10px 12px', borderRadius: 12, borderLeft: '3px solid #94a3b8' }}>
-                        <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)' }}>10:15 AM - 11:15 AM · PERIOD 2</div>
-                        <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>EE8602 Microprocessors</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>Room EB-206 · Ms. P. Vijayalakshmi</div>
-                      </div>
-                      <div style={{ background: 'var(--bg-secondary)', padding: '10px 12px', borderRadius: 12, borderLeft: '3px solid #94a3b8' }}>
-                        <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-muted)' }}>01:30 PM - 04:30 PM · LAB SESSION</div>
-                        <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>Power Electronics Lab</div>
-                        <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>EEE Lab 2 · Dr. M. Arulkumar</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             )
           ) : (
@@ -955,26 +1207,27 @@ function App() {
                     />
                   </div>
                 )}
-                {currentTab === 'profile-details' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="profile" currentUser={currentUser} onUpdateUser={(updated) => setCurrentUser(updated)} />}
-                {currentTab === 'profile' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="documents" />}
-                {currentTab === 'certificates' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="certificates" />}
-                {currentTab === 'request-letters' && <RequestLetters onBack={() => setCurrentTab(null)} currentEmail={currentUser?.email || 'student@eee.com'} currentName={currentUser?.name || 'Nithin Annamalai'} currentRollNo={currentUser?.rollNo || '7377221EE001'} isAdmin={isAdmin} />}
-                {currentTab === 'lab-finder' && <LabSeatFinder onBack={() => setCurrentTab(null)} rollNo={currentUser?.rollNo || '7377221EE001'} />}
-                {currentTab === 'cgpa-calc' && <GpaCalculator onBack={() => setCurrentTab(null)} />}
-                {currentTab === 'attendance' && <AttendanceTracker currentStudentRollNo={currentUser?.rollNo || '7377221EE001'} currentUserName={currentUser?.name || 'Nithin Annamalai'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} />}
-                {currentTab === 'nptel' && <NptelTracker currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} />}
-                {currentTab === 'academics' && <AcademicsTracker currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} />}
-                {currentTab === 'career' && <CareerHub onBack={() => setCurrentTab(null)} isAdmin={isAdmin} />}
-                {currentTab === 'courses' && <AcademicCalendar onBack={() => setCurrentTab(null)} isAdmin={isAdmin} viewMode="courses" initialEditMode={academicInitEdit} />}
-                {currentTab === 'calendar' && <AcademicCalendar onBack={() => setCurrentTab(null)} isAdmin={isAdmin} viewMode="calendar" initialEditMode={academicInitEdit} />}
-                {currentTab === 'timetable' && <Timetable onBack={() => setCurrentTab(null)} isAdmin={isAdmin} semester={6} />}
-                {currentTab === 'puzzle-games' && <PuzzleGames onBack={() => setCurrentTab(null)} />}
+                {currentTab === 'profile-details' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} mode="profile" currentUser={currentUser} onUpdateUser={(updated) => setCurrentUser(updated)} />}
+                {currentTab === 'profile' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} mode="documents" />}
+                {currentTab === 'certificates' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} mode="certificates" />}
+                {currentTab === 'request-letters' && <RequestLetters onBack={handleCloseModal} currentEmail={currentUser?.email || 'student@eee.com'} currentName={currentUser?.name || 'Nithin Annamalai'} currentRollNo={currentUser?.rollNo || '7377221EE001'} isAdmin={isAdmin} />}
+                {currentTab === 'lab-finder' && <LabSeatFinder onBack={handleCloseModal} rollNo={currentUser?.rollNo || '7377221EE001'} />}
+                {currentTab === 'cgpa-calc' && <GpaCalculator onBack={handleCloseModal} />}
+                {currentTab === 'attendance' && <AttendanceTracker currentStudentRollNo={currentUser?.rollNo || '7377221EE001'} currentUserName={currentUser?.name || 'Nithin Annamalai'} isAdmin={isAdmin} onBack={handleCloseModal} />}
+                {currentTab === 'nptel' && <NptelTracker currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} />}
+                {currentTab === 'academics' && <AcademicsTracker currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} />}
+                {currentTab === 'career' && <CareerHub onBack={handleCloseModal} isAdmin={isAdmin} />}
+                {currentTab === 'courses' && <AcademicCalendar onBack={handleCloseModal} isAdmin={isAdmin} viewMode="courses" initialEditMode={academicInitEdit} />}
+                {currentTab === 'calendar' && <AcademicCalendar onBack={handleCloseModal} isAdmin={isAdmin} viewMode="calendar" initialEditMode={academicInitEdit} />}
+                {currentTab === 'timetable' && <Timetable onBack={handleCloseModal} isAdmin={isAdmin} semester={3} />}
+                {currentTab === 'puzzle-games' && <PuzzleGames onBack={handleCloseModal} />}
                 {currentTab === 'suggestion' && (
-                  <SuggestionBox onClose={() => setCurrentTab(null)} userName={currentUser?.name || 'Guest'} />
+                  <SuggestionBox onClose={handleCloseModal} userName={currentUser?.name || 'Guest'} />
                 )}
-                {currentTab === 'campus-map' && <CampusMapPanel onClose={() => setCurrentTab(null)} isAdmin={isAdmin} />}
-                {currentTab === 'college-rules' && <CollegeRulesPanel onClose={() => setCurrentTab(null)} isAdmin={isAdmin} />}
-                {currentTab === 'faculty' && <FacultyPanel onClose={() => setCurrentTab(null)} isAdmin={isAdmin} />}
+                {currentTab === 'campus-map' && <CampusMapPanel onClose={handleCloseModal} isAdmin={isAdmin} />}
+                {currentTab === 'college-rules' && <CollegeRulesPanel onClose={handleCloseModal} isAdmin={isAdmin} />}
+                {currentTab === 'faculty' && <FacultyPanel onClose={handleCloseModal} isAdmin={isAdmin} />}
+                {currentTab === 'student-manager' && <StudentManager onBack={handleCloseModal} isAdmin={isAdmin} currentUser={currentUser} />}
               </div>
             </div>
           )}
@@ -1469,7 +1722,3 @@ function FacultyPanel({ onClose: _onClose, isAdmin = false }: { onClose: () => v
 }
 
 export default App;
-function setDismissedSignIn(_arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
-

@@ -3,11 +3,15 @@ import { ArrowUpRight, Menu, LayoutGrid, Briefcase } from 'lucide-react';
 import appLogo from '../../assets/app-logo.png';
 import cosmicBg from '../../assets/cosmic-planet.jpg';
 
+import type { UserProfile } from '../../App';
+
 interface DesktopLandingPageProps {
   onOpenLogin: (isSignUp?: boolean) => void;
+  demoProfiles?: UserProfile[];
+  onDemoLogin?: (profile: UserProfile) => void;
 }
 
-export const DesktopLandingPage: React.FC<DesktopLandingPageProps> = ({ onOpenLogin }) => {
+export const DesktopLandingPage: React.FC<DesktopLandingPageProps> = ({ onOpenLogin, demoProfiles, onDemoLogin }) => {
   return (
     <div className="cosmic-landing-wrapper">
       {/* ── Outer Tablet/Screen Rounded Frame (Matching Screenshot) ── */}
@@ -28,6 +32,29 @@ export const DesktopLandingPage: React.FC<DesktopLandingPageProps> = ({ onOpenLo
           </div>
 
           <div className="cosmic-nav-right">
+            {demoProfiles && onDemoLogin && (
+              <div style={{ display: 'flex', gap: 8, marginRight: 10 }}>
+                {demoProfiles.map((p, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => onDemoLogin(p)}
+                    style={{
+                      background: p.role === 'teacher' ? 'rgba(234, 88, 12, 0.8)' : 'rgba(37, 99, 235, 0.8)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      color: '#ffffff',
+                      borderRadius: 20,
+                      padding: '4px 12px',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      backdropFilter: 'blur(6px)'
+                    }}
+                  >
+                    ⚡ Demo {p.role === 'teacher' ? 'Faculty' : 'Student'}
+                  </button>
+                ))}
+              </div>
+            )}
             <button className="cosmic-icon-btn" onClick={() => onOpenLogin(false)} title="Modules">
               <LayoutGrid size={18} color="#ffffff" />
             </button>

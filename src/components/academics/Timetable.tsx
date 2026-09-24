@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { dbService } from '../../services/db';
-import type { TimetableEntry } from '../../services/db';
+import type { TimetableEntry, TimetableFile } from '../../services/db';
 import { ArrowLeft, Pencil, X, Check, Clock, User, ChevronLeft, ChevronRight, Calendar, Coffee, ImagePlus, FileImage, ZoomIn } from 'lucide-react';
 
 interface TimetableProps {
@@ -13,14 +13,14 @@ interface TimetableProps {
 const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 const PERIOD_TIMES: Record<number, string> = {
-  1: '8:00–8:50',
-  2: '8:50–9:40',
-  3: '9:55–10:45',
-  4: '10:45–11:35',
-  5: '12:15–1:05',
-  6: '1:05–1:55',
-  7: '2:10–3:00',
-  8: '3:00–3:50',
+  1: '8:45–9:35',
+  2: '9:35–10:25',
+  3: '10:45–11:35',
+  4: '11:35–12:25',
+  5: '1:10–2:00',
+  6: '2:00–2:50',
+  7: '3:00–3:50',
+  8: '3:50–4:40',
 };
 
 const BurgerIcon: React.FC<{ size?: number; color?: string }> = ({ size = 18, color = '#10B981' }) => (
@@ -31,35 +31,56 @@ const BurgerIcon: React.FC<{ size?: number; color?: string }> = ({ size = 18, co
   </svg>
 );
 
+const COURSE_TITLES: Record<string, string> = {
+  '25EE2200': 'Electric Circuit Theory',
+  '25EE2200(T)': 'Electric Circuit Theory (Tutorial)',
+  '25EE2106': 'Electromagnetic Fields',
+  '25EE2201': 'Electrical Machines - I',
+  '25EE2201(L)': 'Electrical Machines Lab',
+  '25EE2250': 'DC Machines & Transformers Lab',
+  '25EE2250 (L)': 'DC Machines & Transformers Lab',
+  '25MA2114': 'Transforms & Partial Differential Eq.',
+  '25CS2261': 'Python Programming & Data Structures',
+  '25CS2261(L)': 'Python Programming Lab',
+  '25EE2270 / 25CS2261': 'Circuits & Python Lab',
+  '25BA1E53': 'Professional Ethics & Human Values',
+  '25AD2125': 'Artificial Intelligence Basics',
+  'AEC': 'Ability Enhancement Course',
+  'GATE': 'GATE Coaching / Training',
+  'LIB': 'Library / Self Study',
+  'TWM': 'Tutor Ward Meeting',
+  'BYOD / Skill Lab': 'BYOD & Skill Lab',
+  'Library / Self Study': 'Library & Reference',
+  'GATE Problem Solving': 'GATE Problem Solving',
+  'Project Work / NPTEL': 'Project Work / NPTEL Mentoring',
+};
+
 interface SubjectDetails {
   courseCode: string;
-  batch: string;
-  sec: string;
+  title: string;
 }
 
 const parseSubject = (subjectStr: string): SubjectDetails => {
   try {
     if (subjectStr && subjectStr.trim().startsWith('{')) {
       const parsed = JSON.parse(subjectStr);
+      const code = parsed.courseCode || '';
       return {
-        courseCode: parsed.courseCode || '',
-        batch: parsed.batch || '2025',
-        sec: parsed.sec || 'B.E-EEE-A',
+        courseCode: code,
+        title: parsed.title || COURSE_TITLES[code] || '',
       };
     }
   } catch (e) {
     // Ignore error
   }
+  const cleanCode = subjectStr || '—';
   return {
-    courseCode: subjectStr || '—',
-    batch: '2025',
-    sec: 'B.E-EEE-A',
+    courseCode: cleanCode,
+    title: COURSE_TITLES[cleanCode] || '',
   };
 };
 
-const TT_STORAGE_KEY = 'eee_timetable_img';
-
-export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, semester = 6 }) => {
+export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, semester = 3 }) => {
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
@@ -68,16 +89,12 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
 
   // Custom states for editing
   const [editCourseCode, setEditCourseCode] = useState('');
-  const [editBatch, setEditBatch] = useState('2025');
-  const [editSec, setEditSec] = useState('B.E-EEE-A');
+  const [editTitle, setEditTitle] = useState('');
   const [editTeacher, setEditTeacher] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Timetable image/PDF states
-  const [ttFile, setTtFile] = useState<{ dataUrl: string; type: string; name: string } | null>(() => {
-    const saved = localStorage.getItem(TT_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [ttFile, setTtFile] = useState<TimetableFile | null>(null);
   const [showTtPreview, setShowTtPreview] = useState(false);
 
   const dateInputRef = useRef<HTMLInputElement>(null);
@@ -85,6 +102,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
 
   useEffect(() => {
     loadTimetable();
+    loadTimetableFile();
   }, [semester]);
 
   const loadTimetable = async () => {
@@ -92,6 +110,15 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
     const data = await dbService.getTimetable(semester);
     setEntries(data);
     setLoading(false);
+  };
+
+  const loadTimetableFile = async () => {
+    try {
+      const file = await dbService.getTimetableFile(semester);
+      setTtFile(file);
+    } catch (err) {
+      console.warn('Failed to load timetable file:', err);
+    }
   };
 
   const getEntry = (day: string, period: number): TimetableEntry | undefined =>
@@ -104,8 +131,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
 
     const details = parseSubject(e?.subject || '');
     setEditCourseCode(details.courseCode === '—' ? '' : details.courseCode);
-    setEditBatch(details.batch);
-    setEditSec(details.sec);
+    setEditTitle(details.title);
     setEditTeacher(e?.teacher || '');
   };
 
@@ -117,8 +143,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
     // Store fields as JSON string inside subject field
     const subjectJson = JSON.stringify({
       courseCode: editCourseCode.trim(),
-      batch: editBatch.trim(),
-      sec: editSec.trim()
+      title: editTitle.trim() || (COURSE_TITLES[editCourseCode.trim()] || ''),
     });
 
     const updated: TimetableEntry = {
@@ -136,24 +161,32 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
     setSaving(false);
   };
 
-  const handleTtFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTtFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       const dataUrl = ev.target?.result as string;
-      const stored = { dataUrl, type: file.type, name: file.name };
-      setTtFile(stored);
-      localStorage.setItem(TT_STORAGE_KEY, JSON.stringify(stored));
+      const fileObj: TimetableFile = {
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        type: file.type,
+        dataUrl,
+        uploadedBy: isAdmin ? 'Admin' : 'Tutor',
+        semester,
+      };
+      const saved = await dbService.saveTimetableFile(fileObj);
+      setTtFile(saved);
     };
     reader.readAsDataURL(file);
     // reset so the same file can be re-uploaded
     e.target.value = '';
   };
 
-  const handleRemoveTtFile = () => {
+  const handleRemoveTtFile = async () => {
+    await dbService.deleteTimetableFile(semester);
     setTtFile(null);
-    localStorage.removeItem(TT_STORAGE_KEY);
+    setShowTtPreview(false);
   };
 
   const handlePrevDay = () => {
@@ -223,8 +256,8 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
       <div className="panel-body">
         {/* Semester badge */}
         <div style={{ marginBottom: 12 }}>
-          <span style={{ fontSize: 11, background: 'rgba(0,82,204,0.1)', color: 'var(--accent-blue)', padding: '3px 10px', borderRadius: 20, fontWeight: 700 }}>
-            Semester {semester} · EEE-A · 2026–27
+          <span style={{ fontSize: 11.5, background: 'rgba(0,82,204,0.1)', color: 'var(--accent-blue)', padding: '4px 12px', borderRadius: 20, fontWeight: 800 }}>
+            Semester {semester} · EEE-B · 2025–2029
           </span>
         </div>
 
@@ -342,32 +375,36 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
               </button>
             ) : null}
 
-            <button
-              onClick={() => ttFileInputRef.current?.click()}
-              title="Upload timetable image or PDF"
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                border: '1.5px solid var(--card-border)',
-                background: 'var(--bg-secondary)',
-                color: 'var(--text-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              <ImagePlus size={16} />
-            </button>
-            <input
-              ref={ttFileInputRef}
-              type="file"
-              accept="image/*,application/pdf"
-              onChange={handleTtFileUpload}
-              style={{ display: 'none' }}
-            />
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => ttFileInputRef.current?.click()}
+                  title="Upload timetable image or PDF"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    border: '1.5px solid var(--card-border)',
+                    background: 'var(--bg-secondary)',
+                    color: 'var(--text-muted)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <ImagePlus size={16} />
+                </button>
+                <input
+                  ref={ttFileInputRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={handleTtFileUpload}
+                  style={{ display: 'none' }}
+                />
+              </>
+            )}
           </div>
         </div>
 
@@ -419,22 +456,22 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      width: 140,
-                      height: 200,
+                      width: 146,
+                      height: 205,
                       flexShrink: 0,
-                      borderRadius: 12,
+                      borderRadius: 14,
                       overflow: 'hidden',
-                      border: `1.5px solid ${isAllocated ? 'rgba(217, 119, 6, 0.25)' : 'var(--card-border)'}`,
+                      border: `1.5px solid ${isAllocated ? 'rgba(217, 119, 6, 0.28)' : 'var(--card-border)'}`,
                       background: isAllocated ? 'var(--bg-primary)' : 'rgba(241, 245, 249, 0.05)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
                       cursor: editMode ? 'pointer' : 'default',
                       transition: 'all 0.18s ease',
                       position: 'relative'
                     }}
                   >
-                    {/* Header Band */}
+                    {/* Header Band with Larger Time */}
                     <div style={{
-                      height: 38,
+                      height: 48,
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
@@ -442,42 +479,39 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
                       background: isAllocated ? '#FEF3C7' : '#F1F5F9',
                       borderBottom: `1px solid ${isAllocated ? '#FDE68A' : 'var(--card-border)'}`,
                       color: isAllocated ? '#B45309' : '#64748B',
-                      padding: '4px 0',
+                      padding: '4px 2px',
                     }}>
-                      <span style={{ fontWeight: 855, fontSize: 12 }}>Hour:{period}</span>
-                      <span style={{ fontSize: 8, opacity: 0.7, fontWeight: 600 }}>{PERIOD_TIMES[period]}</span>
+                      <span style={{ fontWeight: 850, fontSize: 13 }}>Hour:{period}</span>
+                      <span style={{ fontSize: 11, opacity: 0.95, fontWeight: 750, letterSpacing: 0.2, marginTop: 1 }}>{PERIOD_TIMES[period]}</span>
                     </div>
 
-                    {/* Body Content */}
+                    {/* Body Content: Only Course Code, Title, and Faculty */}
                     <div style={{
                       flex: 1,
                       padding: '12px 10px',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'flex-start',
-                      gap: 4,
+                      gap: 6,
                       whiteSpace: 'normal',
                     }}>
                       {isAllocated ? (
                         <>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.3 }}>Course:</span>
-                            <span style={{ fontSize: 11, fontWeight: 800, color: '#1E293B', marginTop: 1 }}>{subjectDetails.courseCode}</span>
+                            <span style={{ fontSize: 8.5, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.4 }}>COURSE:</span>
+                            <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--text-main)', marginTop: 1 }}>{subjectDetails.courseCode}</span>
                           </div>
 
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.3 }}>Batch:</span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#1E293B', marginTop: 1 }}>{subjectDetails.batch}</span>
-                          </div>
-
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.3 }}>Deg-Br & Sec:</span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#1E293B', marginTop: 1 }}>{subjectDetails.sec}</span>
-                          </div>
+                          {subjectDetails.title && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                              <span style={{ fontSize: 8.5, fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.4 }}>TITLE:</span>
+                              <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--text-main)', opacity: 0.85, marginTop: 1, lineHeight: 1.25 }}>{subjectDetails.title}</span>
+                            </div>
+                          )}
 
                           {entry.teacher && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 8, color: 'var(--text-muted)', marginTop: 'auto', borderTop: '1px solid var(--card-border)', paddingTop: 4 }}>
-                              <User size={8} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 750, color: '#0f766e', marginTop: 'auto', borderTop: '1px solid var(--card-border)', paddingTop: 5 }}>
+                              <User size={10} style={{ flexShrink: 0 }} />
                               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.teacher}</span>
                             </div>
                           )}
@@ -486,7 +520,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
                         <div style={{
                           margin: 'auto 0',
                           textAlign: 'center',
-                          fontSize: 10,
+                          fontSize: 10.5,
                           color: '#475569',
                           fontWeight: 700,
                           lineHeight: 1.4,
@@ -541,7 +575,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
                         background: 'rgba(251, 191, 36, 0.06)',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.01)',
                       }}
-                      title="Tea Break (9:40–9:55)"
+                      title="Tea Break (10:25–10:45)"
                     >
                       <Coffee size={16} style={{ color: '#D97706' }} />
                     </div>
@@ -563,7 +597,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
                         background: 'rgba(16, 185, 129, 0.06)',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.01)',
                       }}
-                      title="Lunch Break (11:35–12:15)"
+                      title="Lunch Break (12:25–1:10)"
                     >
                       <BurgerIcon size={16} color="#059669" />
                     </div>
@@ -585,7 +619,7 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
                         background: 'rgba(251, 191, 36, 0.06)',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.01)',
                       }}
-                      title="Tea Break (1:55–2:10)"
+                      title="Tea Break (2:50–3:00)"
                     >
                       <Coffee size={16} style={{ color: '#D97706' }} />
                     </div>
@@ -601,8 +635,8 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
         {/* Legend */}
         {!loading && (
           <div style={{ marginTop: 20, paddingTop: 14, borderTop: '1px solid var(--card-border)' }}>
-            <p style={{ fontSize: 10, color: 'var(--text-muted)', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              <Clock size={11} /> Showing Sem {semester} timetable for III EEE-A
+            <p style={{ fontSize: 10.5, color: 'var(--text-muted)', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+              <Clock size={11} /> Showing Sem {semester} timetable for II EEE-B (2025–2029)
               {isAdmin && editMode && <span style={{ color: 'var(--accent-blue)', fontWeight: 700 }}> · Tap any cell to edit</span>}
             </p>
           </div>
@@ -684,42 +718,38 @@ export const Timetable: React.FC<TimetableProps> = ({ onBack, isAdmin = false, s
             </div>
 
             <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>COURSE CODE / SUBJECT NAME</label>
+              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>COURSE CODE</label>
               <input
                 value={editCourseCode}
-                onChange={e => setEditCourseCode(e.target.value)}
-                placeholder="e.g. 25EE2250"
+                onChange={e => {
+                  const code = e.target.value;
+                  setEditCourseCode(code);
+                  if (COURSE_TITLES[code.trim()]) {
+                    setEditTitle(COURSE_TITLES[code.trim()]);
+                  }
+                }}
+                placeholder="e.g. 25EE2200"
                 autoFocus
                 className="form-input"
               />
             </div>
 
             <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>BATCH</label>
+              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>COURSE TITLE</label>
               <input
-                value={editBatch}
-                onChange={e => setEditBatch(e.target.value)}
-                placeholder="e.g. 2025"
+                value={editTitle}
+                onChange={e => setEditTitle(e.target.value)}
+                placeholder="e.g. Electric Circuit Theory"
                 className="form-input"
               />
             </div>
 
             <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>DEG-BR & SEC</label>
-              <input
-                value={editSec}
-                onChange={e => setEditSec(e.target.value)}
-                placeholder="e.g. B.E-EEE-A"
-                className="form-input"
-              />
-            </div>
-
-            <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>TEACHER (OPTIONAL)</label>
+              <label className="form-label" style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--text-muted)' }}>FACULTY NAME (OPTIONAL)</label>
               <input
                 value={editTeacher}
                 onChange={e => setEditTeacher(e.target.value)}
-                placeholder="e.g. Dr. S. Kavitha"
+                placeholder="e.g. Dr. H. Vidhya"
                 className="form-input"
               />
             </div>

@@ -184,13 +184,14 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
     setLoading(false);
   };
 
-  const fillDemo = (profile: UserProfile) => {
+  const _fillDemo = (profile: UserProfile) => {
     setEmail(profile.email);
     setName(profile.name);
     setRollNo(profile.rollNo);
     setPassword('password123');
     setIsSignUp(false);
   };
+  void _fillDemo;
 
   return (
     <div className="signin-page-overlay">
@@ -325,18 +326,45 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
           </button>
         </form>
 
-        {/* 1-Click Demo Credentials */}
-        <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-          <span style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', letterSpacing: 0.5, display: 'block', textAlign: 'center', marginBottom: 10 }}>
-            1-CLICK DEMO LOGIN PROFILES
-          </span>
+        {/* ⚡ 1-Click Dev Demo Sign In */}
+        <div style={{ marginTop: 22, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 10 }}>
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#4338ca', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+              ⚡ 1-CLICK DEV DEMO SIGN IN
+            </span>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             {demoProfiles.map((p, idx) => (
-              <button key={idx} onClick={() => fillDemo(p)} className="demo-chip-btn">
-                <div style={{ fontWeight: 800, color: p.role === 'teacher' ? '#ea580c' : '#2563eb' }}>
-                  {p.role === 'teacher' ? '👨‍🏫 Faculty' : '🎓 Student'}
+              <button
+                key={idx}
+                type="button"
+                onClick={() => onLoginSuccess(p)}
+                className="demo-chip-btn"
+                style={{
+                  background: p.role === 'teacher' ? 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                  border: `1.5px solid ${p.role === 'teacher' ? '#ea580c40' : '#2563eb40'}`,
+                  borderRadius: 12,
+                  padding: '10px 8px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  transition: 'transform 0.15s ease'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                  <span style={{ fontSize: 11, fontWeight: 900, color: p.role === 'teacher' ? '#ea580c' : '#2563eb' }}>
+                    {p.role === 'teacher' ? '👨‍🏫 Faculty' : '🎓 Student'}
+                  </span>
+                  <span style={{ fontSize: 8.5, fontWeight: 800, background: p.role === 'teacher' ? '#ea580c' : '#2563eb', color: '#fff', padding: '1px 5px', borderRadius: 6 }}>
+                    INSTANT
+                  </span>
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#1e293b' }}>{p.name}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {p.name}
+                </div>
+                <div style={{ fontSize: 9.5, color: '#64748b' }}>
+                  {p.role === 'teacher' ? 'FAC001 · All Classes' : p.rollNo}
+                </div>
               </button>
             ))}
           </div>

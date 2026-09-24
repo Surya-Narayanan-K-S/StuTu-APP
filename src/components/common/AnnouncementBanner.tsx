@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { Announcement } from '../../services/db';
-import { Megaphone, Calendar, Trophy, FileText, X, Pencil } from 'lucide-react';
+import { Megaphone, Calendar, Trophy, FileText, X, Pencil, Upload, FileImage, Trash2, Eye } from 'lucide-react';
 import addIcon from '../../assets/add-icon.png';
 
 interface AnnouncementBannerProps {
@@ -20,7 +20,7 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
   onOpenAnnouncements
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedPoster, setSelectedPoster] = useState<string | null>(null);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editAnnouncementId, setEditAnnouncementId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
@@ -28,6 +28,20 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
   const [newType, setNewType] = useState<'exam' | 'hackathon' | 'event' | 'general'>('general');
   const [newDate, setNewDate] = useState('');
   const [newPosterUrl, setNewPosterUrl] = useState('');
+
+  const posterFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePosterFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setNewPosterUrl(dataUrl);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   // 👆 Swipe touch states
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -61,19 +75,14 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
     }
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = (ann: Announcement, e: React.MouseEvent) => {
     if (swiped) {
       e.stopPropagation();
       e.preventDefault();
       return;
     }
-    if (onOpenAnnouncements) {
-      onOpenAnnouncements();
-    }
+    setSelectedAnnouncement(ann);
   };
-
-  // 👆 Manual navigation only – no auto-rotation
-  // Users swipe left/right or tap indicator dots to navigate
 
   if (announcements.length === 0 && !isAdmin) {
     return (
@@ -84,7 +93,7 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
     );
   }
 
-  const current = announcements[activeIndex];
+  const current = announcements[activeIndex] || announcements[0];
 
   const handleNext = (index: number) => {
     setActiveIndex(index);
@@ -113,15 +122,11 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
     setShowAddModal(false);
   };
 
-  // Quick helper to draw a simple default poster via SVG if none provided for hackathon/events
-  const viewPoster = (ann: Announcement) => {
-    if (ann.posterUrl) {
-      setSelectedPoster(ann.posterUrl);
-    } else {
-      // Generate a quick premium SVG gradient poster
-      const svgPoster = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect width="100%" height="100%" fill="url(%23g)"/><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%231e1b4b" /><stop offset="100%" style="stop-color:%23311042" /></linearGradient></defs><text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="%23f59e0b" font-family="sans-serif" font-weight="bold" font-size="22">${ann.title.toUpperCase()}</text><text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" fill="%23cbd5e1" font-family="sans-serif" font-size="12">${ann.content.substring(0, 50)}...</text><text x="50%" y="85%" dominant-baseline="middle" text-anchor="middle" fill="%2338bdf8" font-family="sans-serif" font-weight="bold" font-size="11">DATE: ${ann.date}</text></svg>`;
-      setSelectedPoster(svgPoster);
-    }
+  const getPosterSrc = (ann: Announcement) => {
+    if (ann.posterUrl) return ann.posterUrl;
+    // Fallback vector poster graphic
+    const bgCol = ann.type === 'hackathon' ? '%23ea580c' : ann.type === 'exam' ? '%23dc2626' : ann.type === 'event' ? '%230284c7' : '%234f46e5';
+    return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="220" viewBox="0 0 320 220"><rect width="100%" height="100%" fill="${bgCol}"/><rect x="10" y="10" width="300" height="200" rx="12" fill="%23ffffff" fill-opacity="0.12"/><text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle" fill="%23ffffff" font-family="system-ui,-apple-system,sans-serif" font-weight="900" font-size="20">${ann.type.toUpperCase()}</text><text x="50%" y="64%" dominant-baseline="middle" text-anchor="middle" fill="%23f8fafc" font-family="system-ui,-apple-system,sans-serif" font-weight="600" font-size="12">KSRCT EEE</text><text x="50%" y="82%" dominant-baseline="middle" text-anchor="middle" fill="%23e2e8f0" font-family="system-ui,-apple-system,sans-serif" font-size="11">${ann.date}</text></svg>`;
   };
 
   const getIcon = (type: string) => {
@@ -147,7 +152,7 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
         )}
       </div>
 
-      {/* Full-page mode: show all announcements as a stacked readable list */}
+      {/* Full-page mode: show all announcements as a stacked readable list with poster on the right */}
       {!onOpenAnnouncements && announcements.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {announcements.map((ann) => {
@@ -158,14 +163,21 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
                 : ann.type === 'event'
                   ? { badge: '#0891b2', bg: 'rgba(8,145,178,0.08)', border: '#0891b230' }
                   : { badge: '#6366f1', bg: 'rgba(99,102,241,0.08)', border: '#6366f130' };
+            const posterSrc = getPosterSrc(ann);
             return (
-              <div key={ann.id} style={{
-                background: colors.bg,
-                border: `1.5px solid ${colors.border}`,
-                borderRadius: 14,
-                padding: '14px 16px',
-                position: 'relative',
-              }}>
+              <div
+                key={ann.id}
+                onClick={(e) => handleCardClick(ann, e)}
+                style={{
+                  background: colors.bg,
+                  border: `1.5px solid ${colors.border}`,
+                  borderRadius: 14,
+                  padding: '14px 16px',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <span style={{
                     fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1,
@@ -176,57 +188,102 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
                   </span>
                   <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{ann.date}</span>
                 </div>
-                <h4 style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-main)', marginBottom: 8, lineHeight: 1.3 }}>{ann.title}</h4>
-                <p style={{ fontSize: 12, color: 'var(--text-main)', lineHeight: 1.65, margin: 0 }}>{ann.content}</p>
-                {ann.posterUrl && (
-                  <div style={{ marginTop: 12 }}>
+
+                {/* Main Content with Poster to the Right */}
+                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-main)', marginBottom: 6, lineHeight: 1.3 }}>{ann.title}</h4>
+                    <p style={{
+                      fontSize: 12,
+                      color: 'var(--text-main)',
+                      lineHeight: 1.55,
+                      margin: 0,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {ann.content}
+                    </p>
+                  </div>
+
+                  {/* Poster Thumbnail on the Right */}
+                  <div
+                    style={{
+                      width: 76,
+                      height: 76,
+                      minWidth: 76,
+                      borderRadius: 10,
+                      overflow: 'hidden',
+                      border: '1.5px solid var(--card-border)',
+                      background: 'var(--bg-secondary)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                      position: 'relative',
+                      flexShrink: 0
+                    }}
+                  >
                     <img
-                      src={ann.posterUrl}
-                      alt="Event Poster"
-                      style={{ width: '100%', borderRadius: 10, objectFit: 'contain', maxHeight: '45vh', background: 'var(--bg-secondary)' }}
+                      src={posterSrc}
+                      alt={ann.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
+                    <div style={{
+                      position: 'absolute', bottom: 2, right: 2,
+                      background: 'rgba(0,0,0,0.65)', color: '#fff',
+                      borderRadius: 4, padding: '1px 4px', fontSize: 8, fontWeight: 800
+                    }}>
+                      VIEW
+                    </div>
                   </div>
-                )}
-                {isAdmin && (
-                  <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                    <button
-                      onClick={() => {
-                        setEditAnnouncementId(ann.id);
-                        setNewTitle(ann.title);
-                        setNewContent(ann.content);
-                        setNewType(ann.type);
-                        setNewDate(ann.date);
-                        setNewPosterUrl(ann.posterUrl || '');
-                        setShowAddModal(true);
-                      }}
-                      className="btn-secondary"
-                      style={{ padding: '4px 10px', fontSize: 10, borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)', display: 'inline-flex', alignItems: 'center', gap: 3 }}
-                    >
-                      <Pencil size={10} /> Edit
-                    </button>
-                    {onDeleteAnnouncement && (
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-blue)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <Eye size={12} /> Tap to view full info & poster
+                  </span>
+
+                  {isAdmin && (
+                    <div style={{ display: 'flex', gap: 6 }} onClick={e => e.stopPropagation()}>
                       <button
-                        onClick={() => { if (window.confirm('Delete this announcement?')) onDeleteAnnouncement(ann.id); }}
+                        onClick={() => {
+                          setEditAnnouncementId(ann.id);
+                          setNewTitle(ann.title);
+                          setNewContent(ann.content);
+                          setNewType(ann.type);
+                          setNewDate(ann.date);
+                          setNewPosterUrl(ann.posterUrl || '');
+                          setShowAddModal(true);
+                        }}
                         className="btn-secondary"
-                        style={{ padding: '4px 10px', fontSize: 10, borderColor: '#f87171', color: '#f87171' }}
+                        style={{ padding: '3px 8px', fontSize: 10, borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)', display: 'inline-flex', alignItems: 'center', gap: 3 }}
                       >
-                        Delete
+                        <Pencil size={10} /> Edit
                       </button>
-                    )}
-                  </div>
-                )}
+                      {onDeleteAnnouncement && (
+                        <button
+                          onClick={() => { if (window.confirm('Delete this announcement?')) onDeleteAnnouncement(ann.id); }}
+                          className="btn-secondary"
+                          style={{ padding: '3px 8px', fontSize: 10, borderColor: '#f87171', color: '#f87171' }}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
       )}
 
-      {/* Widget / carousel mode */}
+      {/* Widget / carousel mode on Dashboard: Poster thumbnail on the right */}
       {onOpenAnnouncements && announcements.length > 0 && (
         <div
           className="announcement-card"
-          style={{ cursor: 'pointer' }}
-          onClick={handleCardClick}
+          style={{ cursor: 'pointer', position: 'relative' }}
+          onClick={(e) => handleCardClick(current, e)}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -241,22 +298,56 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
             <span className="ann-date">{current.date}</span>
           </div>
 
-          <div>
-            <h4 className="ann-title">{current.title}</h4>
-            <p className="ann-content">{current.content}</p>
+          {/* Row layout: Text on Left, Poster Thumbnail on Right */}
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', margin: '4px 0' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h4 className="ann-title" style={{ margin: '0 0 4px 0', fontSize: 14, fontWeight: 800 }}>{current.title}</h4>
+              <p className="ann-content" style={{ margin: 0, fontSize: 12, lineHeight: 1.5 }}>{current.content}</p>
+            </div>
+
+            {/* Poster Thumbnail preview on the right */}
+            <div
+              onClick={(e) => { e.stopPropagation(); setSelectedAnnouncement(current); }}
+              title="Click to view full poster and info"
+              style={{
+                width: 72,
+                height: 72,
+                minWidth: 72,
+                borderRadius: 10,
+                overflow: 'hidden',
+                border: '1.5px solid var(--card-border)',
+                background: 'var(--bg-secondary)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                position: 'relative',
+                flexShrink: 0,
+                cursor: 'pointer'
+              }}
+            >
+              <img
+                src={getPosterSrc(current)}
+                alt={current.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <div style={{
+                position: 'absolute', bottom: 2, right: 2,
+                background: 'rgba(0,0,0,0.65)', color: '#fff',
+                borderRadius: 4, padding: '1px 4px', fontSize: 8, fontWeight: 900,
+                letterSpacing: 0.5
+              }}>
+                EXPAND
+              </div>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }} onClick={e => e.stopPropagation()}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', gap: 6 }}>
-              {(current.type === 'hackathon' || current.type === 'event' || current.posterUrl) ? (
-                <button
-                  onClick={(e) => { e.stopPropagation(); viewPoster(current); }}
-                  className="btn-secondary"
-                  style={{ padding: '3px 8px', fontSize: 10, borderColor: 'var(--accent-gold)', color: 'var(--accent-gold)' }}
-                >
-                  View Poster
-                </button>
-              ) : <div />}
+              <button
+                onClick={(e) => { e.stopPropagation(); setSelectedAnnouncement(current); }}
+                className="btn-secondary"
+                style={{ padding: '3px 8px', fontSize: 10, borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3 }}
+              >
+                <Eye size={11} /> View Details & Poster
+              </button>
 
               {isAdmin && (
                 <>
@@ -308,18 +399,105 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
         </div>
       )}
 
-      {/* Poster Viewing Modal */}
-      {selectedPoster && typeof document !== 'undefined' && createPortal(
-        <div className="poster-modal" onClick={() => setSelectedPoster(null)}>
-          <div className="poster-content" onClick={e => e.stopPropagation()}>
-            <button className="close-modal-btn" onClick={() => setSelectedPoster(null)}>
-              <X size={16} />
-            </button>
-            <h3 style={{ fontSize: 14, fontWeight: '700', paddingRight: 20 }}>Event Details</h3>
-            <img src={selectedPoster} alt="Announcement Poster" className="poster-image" />
-            <p style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
-              Tap anywhere outside the card to close.
-            </p>
+      {/* Bigger View Modal (Full Info + Big Poster) */}
+      {selectedAnnouncement && typeof document !== 'undefined' && createPortal(
+        <div className="poster-modal" onClick={() => setSelectedAnnouncement(null)}>
+          <div
+            className="poster-content"
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: 480, maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            {/* Header: Type Badge, Date, Close Button */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <span className={`ann-badge ${selectedAnnouncement.type}`}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  {getIcon(selectedAnnouncement.type)}
+                  {selectedAnnouncement.type}
+                </span>
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600 }}>{selectedAnnouncement.date}</span>
+                <button
+                  className="close-modal-btn"
+                  style={{ position: 'static', width: 28, height: 28 }}
+                  onClick={() => setSelectedAnnouncement(null)}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Announcement Title */}
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.35, margin: '4px 0 8px' }}>
+              {selectedAnnouncement.title}
+            </h3>
+
+            {/* Big Poster Image Preview */}
+            <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid var(--card-border)', background: 'var(--bg-secondary)', marginBottom: 8 }}>
+              <img
+                src={getPosterSrc(selectedAnnouncement)}
+                alt={selectedAnnouncement.title}
+                className="poster-image"
+                style={{ width: '100%', maxHeight: '42vh', objectFit: 'contain', display: 'block' }}
+              />
+            </div>
+
+            {/* Full Information / Content Description */}
+            <div style={{ background: 'var(--bg-secondary)', padding: 14, borderRadius: 14, border: '1px solid var(--card-border)' }}>
+              <h5 style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: 0.5, marginBottom: 6 }}>
+                Description & Details
+              </h5>
+              <p style={{ fontSize: 13, color: 'var(--text-main)', lineHeight: 1.65, whiteSpace: 'pre-wrap', margin: 0 }}>
+                {selectedAnnouncement.content}
+              </p>
+            </div>
+
+            {/* Admin Controls / Close */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
+              {isAdmin && (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => {
+                      const annToEdit = selectedAnnouncement;
+                      setSelectedAnnouncement(null);
+                      setEditAnnouncementId(annToEdit.id);
+                      setNewTitle(annToEdit.title);
+                      setNewContent(annToEdit.content);
+                      setNewType(annToEdit.type);
+                      setNewDate(annToEdit.date);
+                      setNewPosterUrl(annToEdit.posterUrl || '');
+                      setShowAddModal(true);
+                    }}
+                    className="btn-secondary"
+                    style={{ padding: '6px 12px', fontSize: 11, borderColor: 'var(--accent-blue)', color: 'var(--accent-blue)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                  >
+                    <Pencil size={12} /> Edit Announcement
+                  </button>
+                  {onDeleteAnnouncement && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Delete this announcement?')) {
+                          onDeleteAnnouncement(selectedAnnouncement.id);
+                          setSelectedAnnouncement(null);
+                        }
+                      }}
+                      className="btn-secondary"
+                      style={{ padding: '6px 12px', fontSize: 11, borderColor: '#f87171', color: '#f87171' }}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              )}
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setSelectedAnnouncement(null)}
+                style={{ marginLeft: 'auto', padding: '6px 16px', fontSize: 12 }}
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>,
         document.body
@@ -386,14 +564,65 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Poster URL or SVG string (Optional)</label>
-              <input
-                type="text"
-                value={newPosterUrl}
-                onChange={e => setNewPosterUrl(e.target.value)}
-                className="form-input"
-                placeholder="data:image/svg+xml;... or Web Image Link"
-              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <label className="form-label" style={{ margin: 0 }}>Announcement Poster / Circular (Optional)</label>
+                {newPosterUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setNewPosterUrl('')}
+                    style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: 11, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
+                  >
+                    <Trash2 size={12} /> Remove
+                  </button>
+                )}
+              </div>
+
+              {/* Upload Button */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => posterFileInputRef.current?.click()}
+                  className="btn-secondary"
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    fontWeight: 700,
+                    fontSize: 12,
+                    background: 'rgba(0,82,204,0.06)',
+                    color: 'var(--accent-blue)',
+                    border: '1.5px dashed var(--accent-blue)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Upload size={16} /> Choose Image / PDF File
+                </button>
+                <input
+                  ref={posterFileInputRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={handlePosterFileUpload}
+                  style={{ display: 'none' }}
+                />
+              </div>
+
+              {/* Attached Preview */}
+              {newPosterUrl && (
+                <div style={{ marginTop: 8, borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', background: 'var(--bg-secondary)', padding: 6, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  {newPosterUrl.startsWith('data:image') || newPosterUrl.startsWith('http') ? (
+                    <img src={newPosterUrl} alt="Preview" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8 }} />
+                  ) : (
+                    <FileImage size={28} style={{ color: 'var(--accent-blue)', margin: '0 6px' }} />
+                  )}
+                  <div style={{ flex: 1, fontSize: 11, fontWeight: 700, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    Poster attached successfully
+                  </div>
+                </div>
+              )}
             </div>
 
             <button type="submit" className="btn-primary" style={{ marginTop: 8 }}>

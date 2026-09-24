@@ -12,6 +12,7 @@ interface DesktopSidebarProps {
   onSelectTab: (tabKey: string | null) => void;
   isAuthenticated: boolean;
   currentUser: UserProfile | null;
+  isAdmin?: boolean;
   onOpenSignIn: () => void;
   onLogout: () => void;
 }
@@ -21,6 +22,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   onSelectTab,
   isAuthenticated,
   currentUser,
+  isAdmin = false,
   onOpenSignIn,
   onLogout
 }) => {
@@ -126,6 +128,16 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         <button className={`sidebar-nav-item ${currentTab === 'faculty' ? 'active' : ''}`} onClick={() => onSelectTab('faculty')}>
           <Phone size={18} style={{ color: '#db2777' }} /> <span>Faculty Directory</span>
         </button>
+
+        {/* SECTION 5: FACULTY & ADMIN (Shown to Admins/Teachers) */}
+        {isAdmin && (
+          <>
+            <div className="sidebar-group-title" style={{ color: '#0052cc', marginTop: 16 }}>👨‍🏫 FACULTY ADMIN</div>
+            <button className={`sidebar-nav-item ${currentTab === 'student-manager' ? 'active' : ''}`} onClick={() => onSelectTab('student-manager')}>
+              <UserCheck size={18} style={{ color: '#0052cc' }} /> <span>Student Directory &amp; DB</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Footer Action */}

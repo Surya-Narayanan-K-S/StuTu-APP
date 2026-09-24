@@ -180,16 +180,17 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
     setLoading(false);
   };
 
-  const fillDemo = (profile: UserProfile) => {
+  const _fillDemo = (profile: UserProfile) => {
     setEmail(profile.email);
     setName(profile.name);
     setRollNo(profile.rollNo);
     setPassword('password123');
     setIsSignUp(false);
   };
+  void _fillDemo;
 
   return (
-    <div 
+    <div
       className="cosmic-login-fullscreen"
       style={{
         backgroundImage: `linear-gradient(180deg, rgba(3,5,12,0.8) 0%, rgba(3,5,12,0.92) 100%), url(${cosmicBg})`,
@@ -317,20 +318,27 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
 
           {/* Quick Demo Fill Section */}
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 8 }}>
-              ⚡ 1-CLICK DEMO LOGIN PROFILES
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: 1, display: 'block', marginBottom: 8 }}>
+              ⚡ 1-CLICK DEV DEMO SIGN IN
             </span>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               {demoProfiles.map((p, idx) => (
                 <button
                   key={idx}
-                  onClick={() => fillDemo(p)}
+                  type="button"
+                  onClick={() => onLoginSuccess(p)}
                   className="cosmic-demo-btn"
+                  style={{ cursor: 'pointer' }}
                 >
-                  <div style={{ fontSize: 11, fontWeight: 800, color: p.role === 'teacher' ? '#fb923c' : '#60a5fa' }}>
-                    {p.role === 'teacher' ? '👨‍🏫 Faculty' : '🎓 Student'}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: p.role === 'teacher' ? '#fb923c' : '#60a5fa' }}>
+                      {p.role === 'teacher' ? '👨‍🏫 Faculty Admin' : '🎓 UG Student'}
+                    </div>
+                    <span style={{ fontSize: 8, fontWeight: 800, background: '#2563eb', color: '#fff', padding: '1px 5px', borderRadius: 4 }}>
+                      INSTANT
+                    </span>
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#ffffff' }}>{p.name}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#ffffff', marginTop: 2 }}>{p.name}</div>
                   <div style={{ fontSize: 10, color: '#94a3b8' }}>{p.email}</div>
                 </button>
               ))}

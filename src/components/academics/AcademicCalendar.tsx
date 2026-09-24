@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { dbService } from '../../services/db';
-import type { Course } from '../../services/db';
-import { ArrowLeft, BookOpen, Calendar, Trash2, Pencil, X, Check } from 'lucide-react';
+import type { Course, CalendarFile } from '../../services/db';
+import { ArrowLeft, BookOpen, Calendar, Trash2, Pencil, X, Check, Upload, Download, ExternalLink, Eye, EyeOff, FileText, ShieldCheck } from 'lucide-react';
 
 import addIcon from '../../assets/add-icon.png';
 
 // Hardcoded teacher name fallback — used when DB/localStorage is missing teacher_name
 const TEACHER_MAP: Record<string, string> = {
-  'EE8601': 'Dr. S. Kavitha',
-  'EE8602': 'Dr. R. Ramanujam',
-  'EE8603': 'Ms. R. Priyanka',
-  'EE8691': 'Dr. M. Arulkumar',
-  'EE8611': 'Mr. K. Senthilkumar',
-  'EE8612': 'Ms. P. Vijayalakshmi',
+  '25MA2114': 'Dr. V. Tharanidharan, AP/S&H',
+  '25EE2106': 'Dr. M. Ezhilarasi, AP(Sl.G)/EEE',
+  '25EE2200': 'Dr. H. Vidhya, AP(Sr.G)/EEE',
+  '25EE2250': 'Mr. V. Gopu & Dr. K. Balachander, AP(Sl.G)/EEE',
+  '25CS2261': 'Faculty from AIDS department',
+  '25EE2201': 'Mr. B. Sridhar, AP(Sl.G)/EEE',
+  '25AD2125': 'Faculty from AIDS department',
+  '25BA1E53': 'Faculty from MBA department',
+  'AEC': 'English Department',
+  '25EE2270': 'Dr. H. Vidhya & Mr. B. Marisekar, AP(Sr.G)/EEE',
+  'LIB': 'Mrs. R.K. Ragavapriya, AP(Sl.G)/EEE',
+  'GATE': 'Dr. K. Balamurugan, AsP/EEE',
+  'TWM': 'Respective Tutors',
+  'BYOD': 'Mrs. R.K. Ragavapriya / Mr. B. Sridhar',
 };
 
 interface AcademicCalendarProps {
@@ -37,6 +45,9 @@ export const AcademicCalendar: React.FC<AcademicCalendarProps> = ({
 }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [calendarFile, setCalendarFile] = useState<CalendarFile | null>(null);
+  const [showViewer, setShowViewer] = useState(true);
+  const [uploadingCalendar, setUploadingCalendar] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(initialEditMode);
 
@@ -63,7 +74,90 @@ export const AcademicCalendar: React.FC<AcademicCalendarProps> = ({
   useEffect(() => {
     loadCourses();
     loadMilestones();
+    loadCalendarFile();
   }, []);
+
+  const loadCalendarFile = async () => {
+    try {
+      const file = await dbService.getCalendarFile();
+      setCalendarFile(file);
+    } catch (err) {
+      console.error('Failed to load academic calendar file:', err);
+    }
+  };
+
+  const handleCalendarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCalendar(true);
+    setCourseStatus('');
+    const sizeKB = Math.round(file.size / 1024);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const dataUrl = event.target?.result as string;
+        const newCalFile: CalendarFile = {
+          name: file.name,
+          size: `${sizeKB} KB`,
+          type: file.type || 'application/pdf',
+          dataUrl,
+          uploadedAt: new Date().toISOString().split('T')[0],
+          uploadedBy: 'Faculty Administration',
+          academicYear: '2026–2027',
+          description: 'Official SREC EEE Autonomous Academic Calendar & Examination Schedule'
+        };
+        await dbService.saveCalendarFile(newCalFile);
+        setCalendarFile(newCalFile);
+        setShowViewer(true);
+        setCourseStatus('Academic Calendar file successfully saved to database!');
+        setTimeout(() => setCourseStatus(''), 4000);
+      } catch (err) {
+        console.error('Error saving calendar file:', err);
+      } finally {
+        setUploadingCalendar(false);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleDownloadCalendar = () => {
+    if (!calendarFile) return;
+    const a = document.createElement('a');
+    a.href = calendarFile.dataUrl;
+    a.download = calendarFile.name || 'SREC_EEE_Academic_Calendar_2026.pdf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleOpenFullscreen = () => {
+    if (!calendarFile) return;
+    const win = window.open('', '_blank');
+    if (win) {
+      if (calendarFile.type.includes('svg') || calendarFile.name.endsWith('.svg')) {
+        win.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head><title>${calendarFile.name}</title></head>
+            <body style="margin:0; background:#0f172a; display:flex; justify-content:center; align-items:center; min-height:100vh;">
+              <img src="${calendarFile.dataUrl}" style="max-width:100%; height:auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
+            </body>
+          </html>
+        `);
+      } else {
+        win.location.href = calendarFile.dataUrl;
+      }
+    }
+  };
+
+  const handleDeleteCalendar = async () => {
+    if (!window.confirm('Are you sure you want to remove the current Academic Calendar file?')) return;
+    await dbService.deleteCalendarFile();
+    setCalendarFile(null);
+    setCourseStatus('Calendar file removed.');
+    setTimeout(() => setCourseStatus(''), 3000);
+  };
 
   const loadCourses = async () => {
     setLoading(true);
@@ -283,8 +377,133 @@ export const AcademicCalendar: React.FC<AcademicCalendarProps> = ({
 
         {(viewMode === 'calendar' || !viewMode) && (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <h4 style={{ fontSize: 13, fontWeight: '700' }}>Academic Calendar 2026</h4>
+            {/* ── Official Academic Calendar Document Section ── */}
+            <div style={{ background: '#ffffff', borderRadius: 16, border: '1.5px solid rgba(0,82,204,0.15)', padding: 16, marginBottom: 20, boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(220,38,38,0.1)', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Calendar size={22} />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <h4 style={{ fontSize: 15, fontWeight: 900, color: 'var(--text-main)', margin: 0 }}>
+                        Official Academic Calendar 2026–27
+                      </h4>
+                      <span style={{ fontSize: 10, fontWeight: 800, background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                        <ShieldCheck size={11} /> VERIFIED BY ADMIN
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 11.5, color: 'var(--text-muted)', margin: '3px 0 0' }}>
+                      {calendarFile ? `${calendarFile.name} · ${calendarFile.size} · Uploaded: ${calendarFile.uploadedAt}` : 'No calendar file uploaded yet.'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Top Action Controls */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {calendarFile && (
+                    <>
+                      <button
+                        onClick={handleDownloadCalendar}
+                        style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: '#eff6ff', color: '#0052cc', border: '1px solid #bfdbfe', cursor: 'pointer' }}
+                        title="Download official file"
+                      >
+                        <Download size={13} /> Download
+                      </button>
+                      <button
+                        onClick={handleOpenFullscreen}
+                        style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: '#f8fafc', color: '#334155', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                        title="Open in new window / full screen"
+                      >
+                        <ExternalLink size={13} /> Fullscreen
+                      </button>
+                      <button
+                        onClick={() => setShowViewer(v => !v)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: '#f8fafc', color: '#475569', border: '1px solid #cbd5e1', cursor: 'pointer' }}
+                      >
+                        {showViewer ? <><EyeOff size={13} /> Hide</> : <><Eye size={13} /> View</>}
+                      </button>
+                    </>
+                  )}
+
+                  {isAdmin && (
+                    <label
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 4,
+                        padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 800,
+                        background: '#0052cc', color: '#ffffff', cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,82,204,0.2)'
+                      }}
+                    >
+                      <Upload size={13} />
+                      <span>{uploadingCalendar ? 'Uploading...' : (calendarFile ? 'Replace File' : 'Upload Calendar')}</span>
+                      <input
+                        type="file"
+                        accept=".pdf,.png,.jpg,.jpeg,.svg"
+                        onChange={handleCalendarUpload}
+                        style={{ display: 'none' }}
+                        disabled={uploadingCalendar}
+                      />
+                    </label>
+                  )}
+
+                  {isAdmin && calendarFile && (
+                    <button
+                      onClick={handleDeleteCalendar}
+                      style={{ padding: '6px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', cursor: 'pointer' }}
+                      title="Delete Calendar File"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Status Message */}
+              {courseStatus && (
+                <div style={{ padding: 8, background: '#ecfdf5', borderRadius: 8, fontSize: 11, textAlign: 'center', color: '#059669', fontWeight: 700, border: '1px solid #a7f3d0', marginBottom: 12 }}>
+                  <Check size={12} style={{ display: 'inline', marginRight: 4 }} />{courseStatus}
+                </div>
+              )}
+
+              {/* Document Preview Box */}
+              {showViewer && calendarFile && (
+                <div style={{ background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                  {calendarFile.type.includes('image') || calendarFile.name.endsWith('.svg') || calendarFile.dataUrl.startsWith('data:image/') ? (
+                    <div style={{ overflowX: 'auto', padding: 8, display: 'flex', justifyContent: 'center', background: '#f1f5f9' }}>
+                      <img
+                        src={calendarFile.dataUrl}
+                        alt="Academic Calendar"
+                        style={{ maxWidth: '100%', height: 'auto', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}
+                      />
+                    </div>
+                  ) : (
+                    <iframe
+                      src={calendarFile.dataUrl}
+                      title="Academic Calendar PDF"
+                      style={{ width: '100%', minHeight: 480, border: 'none', background: '#ffffff' }}
+                    />
+                  )}
+                </div>
+              )}
+
+              {!calendarFile && (
+                <div style={{ padding: 32, textAlign: 'center', background: '#f8fafc', borderRadius: 12, border: '1.5px dashed #cbd5e1' }}>
+                  <FileText size={36} style={{ color: '#94a3b8', margin: '0 auto 10px' }} />
+                  <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1e293b', margin: '0 0 4px' }}>No Calendar Document Uploaded</h4>
+                  <p style={{ fontSize: 11, color: '#64748b', margin: 0 }}>
+                    {isAdmin ? 'Click "Upload Calendar" above to upload the semester academic calendar file (PDF or Image).' : 'The department administration will publish the official semester schedule shortly.'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* ── Key Semester Milestones Timeline ── */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div>
+                <h4 style={{ fontSize: 14, fontWeight: '800', margin: 0, color: 'var(--text-main)' }}>Key Academic Milestones 2026–27</h4>
+                <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: '2px 0 0' }}>Continuous Assessment &amp; Semester Deadlines</p>
+              </div>
               {editMode && (
                 <button
                   onClick={() => { setShowMilestoneForm(v => !v); setEditMilestoneId(null); }}

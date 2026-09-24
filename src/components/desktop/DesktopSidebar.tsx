@@ -93,17 +93,14 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
         <button className={`sidebar-nav-item ${currentTab === 'profile' ? 'active' : ''}`} onClick={() => onSelectTab('profile')}>
           <BookOpen size={18} style={{ color: '#0052cc' }} /> <span>My Documents</span>
         </button>
+        <button className={`sidebar-nav-item ${currentTab === 'attendance' ? 'active' : ''}`} onClick={() => onSelectTab('attendance')}>
+          <UserCheck size={18} style={{ color: '#ff5f1f' }} /> <span>Attendance Logs</span>
+        </button>
         <button className={`sidebar-nav-item ${currentTab === 'certificates' ? 'active' : ''}`} onClick={() => onSelectTab('certificates')}>
           <Award size={18} style={{ color: '#be185d' }} /> <span>Certificates Vault</span>
         </button>
-        <button className={`sidebar-nav-item ${currentTab === 'od-form' ? 'active' : ''}`} onClick={() => onSelectTab('od-form')}>
-          <FileText size={18} style={{ color: '#4f46e5' }} /> <span>Apply OD Form</span>
-        </button>
         <button className={`sidebar-nav-item ${currentTab === 'request-letters' ? 'active' : ''}`} onClick={() => onSelectTab('request-letters')}>
           <FileText size={18} style={{ color: '#0d9488' }} /> <span>Bonafide &amp; NOC Letters</span>
-        </button>
-        <button className={`sidebar-nav-item ${currentTab === 'attendance' ? 'active' : ''}`} onClick={() => onSelectTab('attendance')}>
-          <UserCheck size={18} style={{ color: '#ff5f1f' }} /> <span>Attendance Logs</span>
         </button>
         <button className={`sidebar-nav-item ${currentTab === 'lab-finder' ? 'active' : ''}`} onClick={() => onSelectTab('lab-finder')}>
           <Map size={18} style={{ color: '#d97706' }} /> <span>Lab Seat Finder</span>

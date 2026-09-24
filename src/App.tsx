@@ -17,7 +17,6 @@ import {
   AIChatbot,
   SignInPage,
   StudentDetailsCard,
-  ODForm,
   Timetable,
   RequestLetters,
   LabSeatFinder,
@@ -268,6 +267,12 @@ function App() {
     if (titleKey === 'home') {
       setCurrentTab(null);
       setActiveBottomNav('home');
+      setIsDrawerOpen(false);
+      return;
+    }
+    if (titleKey === 'od-form' || titleKey === 'apply-od') {
+      const win = window.open('https://onduty.srecieee.org', '_blank', 'noopener,noreferrer');
+      if (!win) window.location.href = 'https://onduty.srecieee.org';
       setIsDrawerOpen(false);
       return;
     }
@@ -686,7 +691,6 @@ function App() {
                     {[
                       { label: 'Student Document Vault', key: 'profile', icon: <BookOpen size={15} />, color: '#0052cc' },
                       { label: 'Certificates & Badges', key: 'certificates', icon: <Award size={15} />, color: '#be185d' },
-                      { label: 'OD Form Application', key: 'od-form', icon: <FileText size={15} />, color: '#4f46e5' },
                       { label: 'Bonafide & NOC Request', key: 'request-letters', icon: <FileText size={15} />, color: '#0d9488' },
                     ].map(item => (
                       <div
@@ -803,15 +807,18 @@ function App() {
                     </div>
                   </div>
 
-                  {/* ⚡ DIRECT SHORTCUTS: Apply OD & Timetable */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  {/* ⚡ DIRECT SHORTCUTS: Apply OD, Attendance & Timetable */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
                     <button
-                      onClick={() => handleCardClick('od-form')}
+                      onClick={() => {
+                        const win = window.open('https://onduty.srecieee.org', '_blank', 'noopener,noreferrer');
+                        if (!win) window.location.href = 'https://onduty.srecieee.org';
+                      }}
                       style={{
                         background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
                         border: '1.5px solid rgba(37, 99, 235, 0.25)',
                         borderRadius: 14,
-                        padding: '12px 8px',
+                        padding: '12px 6px',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -828,12 +835,34 @@ function App() {
                     </button>
 
                     <button
+                      onClick={() => handleCardClick('attendance')}
+                      style={{
+                        background: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
+                        border: '1.5px solid rgba(234, 88, 12, 0.25)',
+                        borderRadius: 14,
+                        padding: '12px 6px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(234, 88, 12, 0.08)',
+                        transition: 'transform 0.15s ease'
+                      }}
+                    >
+                      <div style={{ width: 34, height: 34, borderRadius: 10, background: '#ea580c', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <UserCheck size={18} />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 800, color: '#9a3412' }}>Attendance</span>
+                    </button>
+
+                    <button
                       onClick={() => handleCardClick('timetable')}
                       style={{
                         background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
                         border: '1.5px solid rgba(217, 119, 6, 0.25)',
                         borderRadius: 14,
-                        padding: '12px 8px',
+                        padding: '12px 6px',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -929,7 +958,6 @@ function App() {
                 {currentTab === 'profile-details' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="profile" currentUser={currentUser} onUpdateUser={(updated) => setCurrentUser(updated)} />}
                 {currentTab === 'profile' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="documents" />}
                 {currentTab === 'certificates' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={() => setCurrentTab(null)} mode="certificates" />}
-                {currentTab === 'od-form' && <ODForm currentUser={currentUser} onBack={() => setCurrentTab(null)} />}
                 {currentTab === 'request-letters' && <RequestLetters onBack={() => setCurrentTab(null)} currentEmail={currentUser?.email || 'student@eee.com'} currentName={currentUser?.name || 'Nithin Annamalai'} currentRollNo={currentUser?.rollNo || '7377221EE001'} isAdmin={isAdmin} />}
                 {currentTab === 'lab-finder' && <LabSeatFinder onBack={() => setCurrentTab(null)} rollNo={currentUser?.rollNo || '7377221EE001'} />}
                 {currentTab === 'cgpa-calc' && <GpaCalculator onBack={() => setCurrentTab(null)} />}

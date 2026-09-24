@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Sparkles, BookOpen, Calendar, GraduationCap, Award, FileText,
-  UserCheck, Inbox, Zap, Map, Shield, Phone, Gamepad2
+  Sparkles, BookOpen, Calendar, GraduationCap, Award,
+  UserCheck, Inbox, Zap, Map, Shield, Phone
 } from 'lucide-react';
 
 export interface RouteCategoryItem {
@@ -35,7 +35,6 @@ export const APP_CATEGORIES: RouteCategory[] = [
     items: [
       { key: 'profile', label: 'Documents', icon: React.createElement(BookOpen, { size: 24 }), color: '#0052cc', bg: 'rgba(0, 82, 204, 0.12)' },
       { key: 'certificates', label: 'Certificates', icon: React.createElement(Award, { size: 24 }), color: '#be185d', bg: 'rgba(190, 24, 93, 0.12)' },
-      { key: 'od-form', label: 'OD Form', icon: React.createElement(FileText, { size: 24 }), color: '#4f46e5', bg: 'rgba(79, 70, 229, 0.12)' },
     ]
   },
   {

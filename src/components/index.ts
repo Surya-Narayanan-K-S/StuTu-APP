@@ -21,7 +21,6 @@ export { StudentDetailsCard } from './common/StudentDetailsCard';
 export { AttendanceTracker } from './services/AttendanceTracker';
 export { CareerHub } from './services/CareerHub';
 export { LabSeatFinder } from './services/LabSeatFinder';
-export { ODForm } from './services/ODForm';
 export { ProfileDocs } from './services/ProfileDocs';
 export { RequestLetters } from './services/RequestLetters';
 export { PuzzleGames } from './services/PuzzleGames';

@@ -16,7 +16,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
   const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
   const [email, setEmail] = useState('student@eee.com');
   const [name, setName] = useState('Nithin Annamalai');
-  const [rollNo, setRollNo] = useState('7377221EE001');
+  const [rollNo, setRollNo] = useState('71812503104');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -108,9 +108,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
         name: name.trim(),
         rollNo: rollNo.trim(),
         role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-        className: 'III EEE-A',
-        yearOfStudy: '3rd Year',
-        semester: 'Semester VI',
+        className: 'II EEE-B',
+        yearOfStudy: '2nd Year',
+        semester: 'Semester III',
         department: 'Dept of EEE'
       });
       setLoading(false);
@@ -135,11 +135,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
           onLoginSuccess({
             email: targetEmail,
             name: targetEmail.split('@')[0].toUpperCase(),
-            rollNo: '7377221EE001',
+            rollNo: '71812503104',
             role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-            className: 'III EEE-A',
-            yearOfStudy: '3rd Year',
-            semester: 'Semester VI',
+            className: 'II EEE-B',
+            yearOfStudy: '2nd Year',
+            semester: 'Semester III',
             department: 'Dept of EEE'
           });
           setLoading(false);
@@ -151,11 +151,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
           onLoginSuccess({
             email: data.user.email || targetEmail,
             name: userMeta.name || targetEmail.split('@')[0].toUpperCase(),
-            rollNo: userMeta.rollNo || '7377221EE001',
+            rollNo: userMeta.rollNo || '71812503104',
             role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-            className: 'III EEE-A',
-            yearOfStudy: '3rd Year',
-            semester: 'Semester VI',
+            className: 'II EEE-B',
+            yearOfStudy: '2nd Year',
+            semester: 'Semester III',
             department: 'Dept of EEE'
           });
           setLoading(false);
@@ -173,11 +173,11 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
       onLoginSuccess({
         email: targetEmail,
         name: targetEmail.split('@')[0].toUpperCase(),
-        rollNo: '7377221EE001',
+        rollNo: '71812503104',
         role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-        className: 'III EEE-A',
-        yearOfStudy: '3rd Year',
-        semester: 'Semester VI',
+        className: 'II EEE-B',
+        yearOfStudy: '2nd Year',
+        semester: 'Semester III',
         department: 'Dept of EEE'
       });
     }
@@ -261,7 +261,7 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
                 <UserCheck size={18} className="field-row-icon" />
                 <input
                   type="text"
-                  placeholder="Roll Number (e.g. 7377221EE001)"
+                  placeholder="Roll Number (e.g. 71812503104)"
                   value={rollNo}
                   onChange={e => setRollNo(e.target.value)}
                   className="mobile-underlined-input"

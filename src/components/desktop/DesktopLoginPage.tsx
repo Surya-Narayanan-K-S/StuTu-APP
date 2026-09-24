@@ -71,9 +71,9 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
               name: name.trim(),
               rollNo: rollNo.trim(),
               role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-              className: 'III EEE-A',
-              yearOfStudy: '3rd Year',
-              semester: 'Semester VI',
+              className: 'II EEE-B',
+              yearOfStudy: '2nd Year',
+              semester: 'Semester III',
               department: 'Dept of EEE'
             });
             setLoading(false);
@@ -86,9 +86,9 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
               name: name.trim(),
               rollNo: rollNo.trim(),
               role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-              className: 'III EEE-A',
-              yearOfStudy: '3rd Year',
-              semester: 'Semester VI',
+              className: 'II EEE-B',
+              yearOfStudy: '2nd Year',
+              semester: 'Semester III',
               department: 'Dept of EEE'
             });
             setLoading(false);
@@ -104,9 +104,9 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
         name: name.trim(),
         rollNo: rollNo.trim(),
         role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-        className: 'III EEE-A',
-        yearOfStudy: '3rd Year',
-        semester: 'Semester VI',
+        className: 'II EEE-B',
+        yearOfStudy: '2nd Year',
+        semester: 'Semester III',
         department: 'Dept of EEE'
       });
       setLoading(false);
@@ -131,11 +131,11 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
           onLoginSuccess({
             email: targetEmail,
             name: targetEmail.split('@')[0].toUpperCase(),
-            rollNo: '7377221EE001',
+            rollNo: '71812503104',
             role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-            className: 'III EEE-A',
-            yearOfStudy: '3rd Year',
-            semester: 'Semester VI',
+            className: 'II EEE-B',
+            yearOfStudy: '2nd Year',
+            semester: 'Semester III',
             department: 'Dept of EEE'
           });
           setLoading(false);
@@ -147,11 +147,11 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
           onLoginSuccess({
             email: data.user.email || targetEmail,
             name: userMeta.name || targetEmail.split('@')[0].toUpperCase(),
-            rollNo: userMeta.rollNo || '7377221EE001',
+            rollNo: userMeta.rollNo || '71812503104',
             role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-            className: 'III EEE-A',
-            yearOfStudy: '3rd Year',
-            semester: 'Semester VI',
+            className: 'II EEE-B',
+            yearOfStudy: '2nd Year',
+            semester: 'Semester III',
             department: 'Dept of EEE'
           });
           setLoading(false);
@@ -169,11 +169,11 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
       onLoginSuccess({
         email: targetEmail,
         name: targetEmail.split('@')[0].toUpperCase(),
-        rollNo: '7377221EE001',
+        rollNo: '71812503104',
         role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-        className: 'III EEE-A',
-        yearOfStudy: '3rd Year',
-        semester: 'Semester VI',
+        className: 'II EEE-B',
+        yearOfStudy: '2nd Year',
+        semester: 'Semester III',
         department: 'Dept of EEE'
       });
     }

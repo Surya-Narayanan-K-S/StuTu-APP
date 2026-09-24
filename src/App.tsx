@@ -28,7 +28,8 @@ import {
   DesktopVisionaDashboard,
   MobileLandingPage,
   PuzzleGames,
-  StudentManager
+  StudentManager,
+  TaskList
 } from './components';
 
 import {
@@ -401,6 +402,7 @@ function App() {
     'campus-map': ['campus', 'map', 'location', 'block', 'building'],
     'college-rules': ['rules', 'regulation', 'policy', 'discipline'],
     faculty: ['faculty', 'teacher', 'staff', 'professor', 'contact', 'phone'],
+    tasks: ['task', 'todo', 'checklist', 'assignment', 'deadline', 'reminder', 'to-do'],
   };
 
   const itemMatchesSearch = (item: { key: string; label: string }, q: string) => {
@@ -1220,6 +1222,7 @@ function App() {
                 {currentTab === 'courses' && <AcademicCalendar onBack={handleCloseModal} isAdmin={isAdmin} viewMode="courses" initialEditMode={academicInitEdit} />}
                 {currentTab === 'calendar' && <AcademicCalendar onBack={handleCloseModal} isAdmin={isAdmin} viewMode="calendar" initialEditMode={academicInitEdit} />}
                 {currentTab === 'timetable' && <Timetable onBack={handleCloseModal} isAdmin={isAdmin} semester={3} />}
+                {currentTab === 'tasks' && <TaskList onBack={handleCloseModal} currentEmail={currentUser?.email || 'user'} />}
                 {currentTab === 'puzzle-games' && <PuzzleGames onBack={handleCloseModal} />}
                 {currentTab === 'suggestion' && (
                   <SuggestionBox onClose={handleCloseModal} userName={currentUser?.name || 'Guest'} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Sparkles, BookOpen, Calendar, GraduationCap, Award,
-  UserCheck, Inbox, Zap, Map, Shield, Phone
+  UserCheck, Inbox, Zap, Map, Shield, Phone, CheckSquare
 } from 'lucide-react';
 
 export interface RouteCategoryItem {
@@ -28,6 +28,7 @@ export const APP_CATEGORIES: RouteCategory[] = [
       { key: 'cgpa-calc', label: 'GPA Calc', icon: React.createElement(GraduationCap, { size: 24 }), color: '#0284c7', bg: 'rgba(2, 132, 199, 0.12)' },
       { key: 'nptel', label: 'NPTEL', icon: React.createElement(Award, { size: 24 }), color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.12)' },
       { key: 'timetable', label: 'Timetable', icon: React.createElement(Calendar, { size: 24 }), color: '#0f766e', bg: 'rgba(15, 118, 110, 0.12)' },
+      { key: 'tasks', label: 'Task List', icon: React.createElement(CheckSquare, { size: 24 }), color: '#7c2d12', bg: 'rgba(124, 45, 18, 0.10)' },
     ]
   },
   {

@@ -269,7 +269,7 @@ export const AcademicCalendar: React.FC<AcademicCalendarProps> = ({
         {(viewMode === 'courses' || !viewMode) && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <h4 style={{ fontSize: 13, fontWeight: '700' }}>Semester VI Curriculum</h4>
+              <h4 style={{ fontSize: 13, fontWeight: '700' }}>Semester III Curriculum</h4>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <span style={{ fontSize: 11, background: 'rgba(56,189,248,0.15)', color: 'var(--accent-blue)', padding: '2px 8px', borderRadius: 4, fontWeight: 'bold' }}>
                   Total: {totalCredits} Cr
@@ -308,7 +308,7 @@ export const AcademicCalendar: React.FC<AcademicCalendarProps> = ({
                 <div>
                   <label className="form-label">Semester</label>
                   <select value={newSem} onChange={e => setNewSem(e.target.value)} className="form-select" style={{ fontSize: 11 }}>
-                    {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>Semester {s}</option>)}
                   </select>
                 </div>
                 <div style={{ display: 'flex', gap: 6 }}>

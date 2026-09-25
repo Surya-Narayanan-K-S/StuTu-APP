@@ -24,9 +24,9 @@ CREATE TABLE IF NOT EXISTS student_profiles (
   roll_no TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
-  class_name TEXT DEFAULT 'III EEE-A',
-  year_of_study TEXT DEFAULT '3rd Year',
-  semester TEXT DEFAULT 'Semester VI',
+  class_name TEXT DEFAULT 'II EEE-B',
+  year_of_study TEXT DEFAULT '2nd Year',
+  semester TEXT DEFAULT 'Semester III',
   department TEXT DEFAULT 'Dept of EEE',
   phone TEXT DEFAULT '+91 98421 55678',
   dob TEXT DEFAULT '2004-05-14',
@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS student_profiles (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 -- Migration columns in case student_profiles already existed previously
-ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS class_name TEXT DEFAULT 'III EEE-A';
-ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS year_of_study TEXT DEFAULT '3rd Year';
-ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS semester TEXT DEFAULT 'Semester VI';
+ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS class_name TEXT DEFAULT 'II EEE-B';
+ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS year_of_study TEXT DEFAULT '2nd Year';
+ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS semester TEXT DEFAULT 'Semester III';
 ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS department TEXT DEFAULT 'Dept of EEE';
 ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS phone TEXT DEFAULT '+91 98421 55678';
 ALTER TABLE student_profiles ADD COLUMN IF NOT EXISTS dob TEXT DEFAULT '2004-05-14';
@@ -319,8 +319,8 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO student_profiles (id, roll_no, name, email, class_name, year_of_study, semester, department, phone, dob, blood_group, address, parent_name, parent_phone, cgpa_json, arrears_count, nptel_exams) 
 VALUES 
-('student@eee.com', 'EEE001', 'Nithin Annamalai', 'student@eee.com', 'III EEE-A', '3rd Year', 'Semester VI', 'Dept of EEE', '+91 98421 55678', '2004-05-14', 'O+', 'Coimbatore, Tamil Nadu', 'Annamalai K', '+91 94432 11223', '{"1": 8.5, "2": 8.3, "3": 8.6, "4": 8.7, "5": 8.4}', 0, '["Embedded Systems", "Power Electronics"]'),
-('student2@eee.com', 'EEE002', 'Aravind Swamy', 'student2@eee.com', 'III EEE-A', '3rd Year', 'Semester VI', 'Dept of EEE', '+91 98421 11223', '2004-08-22', 'B+', 'Salem, Tamil Nadu', 'Swamy R', '+91 94432 44556', '{"1": 7.8, "2": 7.5, "3": 7.9, "4": 7.6, "5": 7.8}', 1, '["Microprocessors & Microcontrollers"]')
+('student@eee.com', 'EEE001', 'Nithin Annamalai', 'student@eee.com', 'II EEE-B', '2nd Year', 'Semester III', 'Dept of EEE', '+91 98421 55678', '2004-05-14', 'O+', 'Coimbatore, Tamil Nadu', 'Annamalai K', '+91 94432 11223', '{"1": 8.5, "2": 8.3, "3": 8.6, "4": 8.7, "5": 8.4}', 0, '["Embedded Systems", "Power Electronics"]'),
+('student2@eee.com', 'EEE002', 'Aravind Swamy', 'student2@eee.com', 'II EEE-B', '2nd Year', 'Semester III', 'Dept of EEE', '+91 98421 11223', '2004-08-22', 'B+', 'Salem, Tamil Nadu', 'Swamy R', '+91 94432 44556', '{"1": 7.8, "2": 7.5, "3": 7.9, "4": 7.6, "5": 7.8}', 1, '["Microprocessors & Microcontrollers"]')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO faculty (id, name, role, email, phone) 

@@ -130,7 +130,7 @@ export const ProfileDocs: React.FC<ProfileDocsProps> = ({
       } else {
         const fallbackStudent: Student = {
           id: currentEmail || 'student@eee.com',
-          rollNo: '7377221EE001',
+          rollNo: '71812503104',
           name: 'Nithin Annamalai',
           email: currentEmail || 'student@eee.com',
           cgpa: {
@@ -219,9 +219,9 @@ export const ProfileDocs: React.FC<ProfileDocsProps> = ({
     if (lower.includes('sem 3') || lower.includes('sem3') || lower.includes('semester 3')) return 'Semester III Marksheet';
     if (lower.includes('sem 4') || lower.includes('sem4') || lower.includes('semester 4')) return 'Semester IV Marksheet';
     if (lower.includes('sem 5') || lower.includes('sem5') || lower.includes('semester 5')) return 'Semester V Marksheet';
-    if (lower.includes('sem 6') || lower.includes('sem6') || lower.includes('semester 6')) return 'Semester VI Marksheet';
-    if (lower.includes('sem 7') || lower.includes('sem7') || lower.includes('semester 7')) return 'Semester VII Marksheet';
-    if (lower.includes('sem 8') || lower.includes('sem8') || lower.includes('semester 8')) return 'Semester VIII Marksheet';
+    if (lower.includes('sem 6') || lower.includes('sem6') || lower.includes('semester 6')) return 'Semester III Marksheet';
+    if (lower.includes('sem 7') || lower.includes('sem7') || lower.includes('semester 7')) return 'Semester IIII Marksheet';
+    if (lower.includes('sem 8') || lower.includes('sem8') || lower.includes('semester 8')) return 'Semester IIIII Marksheet';
     if (lower.includes('nptel') || lower.includes('swayam')) {
       if (lower.includes('python')) return 'NPTEL Python Programming Certificate';
       if (lower.includes('java')) return 'NPTEL Java Programming Certificate';
@@ -451,10 +451,10 @@ export const ProfileDocs: React.FC<ProfileDocsProps> = ({
                 </h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
                   <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.18)', fontSize: 11, fontWeight: 800 }}>
-                    Roll: {profileRollNo || currentUser?.rollNo || '7377221EE001'}
+                    Roll: {profileRollNo || currentUser?.rollNo || '71812503104'}
                   </span>
                   <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.18)', fontSize: 11, fontWeight: 800 }}>
-                    {profileClass || 'III EEE-A'}
+                    {profileClass || 'II EEE-B'}
                   </span>
                 </div>
               </div>
@@ -489,15 +489,15 @@ export const ProfileDocs: React.FC<ProfileDocsProps> = ({
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 14, border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>Class &amp; Section</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{profileClass || 'III EEE-A'}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{profileClass || 'II EEE-B'}</span>
               </div>
               <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 14, border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>Semester</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{profileSem || 'Semester VI'}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{profileSem || 'Semester III'}</span>
               </div>
               <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 14, border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>Academic Year</span>
-                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{profileYear || '3rd Year (2022–26)'}</span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-main)' }}>{profileYear || '2nd Year (2022–26)'}</span>
               </div>
               <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: 14, border: '1px solid #e2e8f0' }}>
                 <span style={{ fontSize: 10, color: '#64748b', fontWeight: 700, textTransform: 'uppercase', display: 'block' }}>Faculty Tutor</span>
@@ -605,10 +605,10 @@ export const ProfileDocs: React.FC<ProfileDocsProps> = ({
                 setShowEditBioModal(false);
               }} style={{ padding: '18px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <ProfileField icon={<User size={14} />} label="Full Name" type="text" value={profileName} onChange={setProfileName} placeholder="e.g. Nithin Annamalai" required />
-                <ProfileField icon={<Hash size={14} />} label="Roll Number" type="text" value={profileRollNo} onChange={setProfileRollNo} placeholder="e.g. 7377221EE001" required />
-                <ProfileField icon={<Layers size={14} />} label="Class & Section" type="text" value={profileClass} onChange={setProfileClass} placeholder="e.g. III EEE-A" />
-                <ProfileField icon={<Calendar size={14} />} label="Year of Study" type="text" value={profileYear} onChange={setProfileYear} placeholder="e.g. 3rd Year" />
-                <ProfileField icon={<BookOpen size={14} />} label="Semester" type="text" value={profileSem} onChange={setProfileSem} placeholder="e.g. Semester VI" />
+                <ProfileField icon={<Hash size={14} />} label="Roll Number" type="text" value={profileRollNo} onChange={setProfileRollNo} placeholder="e.g. 71812503104" required />
+                <ProfileField icon={<Layers size={14} />} label="Class & Section" type="text" value={profileClass} onChange={setProfileClass} placeholder="e.g. II EEE-B" />
+                <ProfileField icon={<Calendar size={14} />} label="Year of Study" type="text" value={profileYear} onChange={setProfileYear} placeholder="e.g. 2nd Year" />
+                <ProfileField icon={<BookOpen size={14} />} label="Semester" type="text" value={profileSem} onChange={setProfileSem} placeholder="e.g. Semester III" />
                 <ProfileField icon={<Phone size={14} />} label="Phone Number" type="tel" value={profilePhone} onChange={setProfilePhone} placeholder="e.g. 98765 43210" />
                 <ProfileField icon={<Droplets size={14} />} label="Blood Group" type="text" value={profileBlood} onChange={setProfileBlood} placeholder="e.g. O+, A+, B-" />
                 <ProfileField icon={<Calendar size={14} />} label="Date of Birth" type="date" value={profileDob} onChange={setProfileDob} placeholder="" />
@@ -650,7 +650,7 @@ export const ProfileDocs: React.FC<ProfileDocsProps> = ({
                 : (mode === 'certificates' ? '🏆 Certified Skill Vault' : '📁 Academic Document Vault')}
             </h2>
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              {isAdmin && !selectedStudentEmail ? 'Institution Verification Center' : `Student ID: ${student?.rollNo || '7377221EE001'}`}
+              {isAdmin && !selectedStudentEmail ? 'Institution Verification Center' : `Student ID: ${student?.rollNo || '71812503104'}`}
             </span>
           </div>
         </div>

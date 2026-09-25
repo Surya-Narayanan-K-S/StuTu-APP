@@ -19,10 +19,10 @@ export const StudentDetailsCard: React.FC<StudentDetailsCardProps> = ({
   const isAdmin = currentUser?.role === 'teacher';
 
   const name = currentUser?.name || 'Nithin Annamalai';
-  const rollNo = currentUser?.rollNo || '7377221EE001';
-  const className = currentUser?.className || 'III EEE-A';
-  const yearOfStudy = currentUser?.yearOfStudy || '3rd Year';
-  const semester = currentUser?.semester || 'Sem VI';
+  const rollNo = currentUser?.rollNo || '71812503104';
+  const className = currentUser?.className || 'II EEE-B';
+  const yearOfStudy = currentUser?.yearOfStudy || '2nd Year';
+  const semester = currentUser?.semester || 'SEM III';
   const department = currentUser?.department || 'Dept of EEE';
 
   const [dbMetrics, setDbMetrics] = useState({
@@ -36,7 +36,7 @@ export const StudentDetailsCard: React.FC<StudentDetailsCardProps> = ({
     let isMounted = true;
     const fetchDbData = async () => {
       const email = currentUser?.email || 'student@eee.com';
-      const studentRoll = currentUser?.rollNo || '7377221EE001';
+      const studentRoll = currentUser?.rollNo || '71812503104';
 
       try {
         const profile = await dbService.getStudentProfile(email);

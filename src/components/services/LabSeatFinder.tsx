@@ -21,7 +21,7 @@ interface SeatAssignment {
 
 const SAMPLE_ASSIGNMENTS: SeatAssignment[] = [
   {
-    rollNo: '7377221EE001',
+    rollNo: '71812503104',
     studentName: 'Nithin Annamalai',
     labName: 'Power Electronics & Drives Laboratory',
     block: 'EEE Main Block - 2nd Floor',
@@ -48,7 +48,7 @@ const SAMPLE_ASSIGNMENTS: SeatAssignment[] = [
     rollNo: '7377221EE003',
     studentName: 'Bhavani Shankar',
     labName: 'Embedded Systems Laboratory',
-    block: 'IT & EEE Block - 3rd Floor',
+    block: 'IT & EEE Block - 2nd Floor',
     roomNo: 'EB-308',
     benchNo: 'Bench C-12',
     systemNo: 'EMB-ARM-15',
@@ -68,8 +68,8 @@ export const LabSeatFinder: React.FC<LabSeatFinderProps> = ({ onBack, rollNo: in
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const query = searchQuery.trim().toLowerCase();
-    const found = SAMPLE_ASSIGNMENTS.find(a => 
-      a.rollNo.toLowerCase() === query || 
+    const found = SAMPLE_ASSIGNMENTS.find(a =>
+      a.rollNo.toLowerCase() === query ||
       a.studentName.toLowerCase().includes(query)
     );
 
@@ -123,10 +123,10 @@ export const LabSeatFinder: React.FC<LabSeatFinderProps> = ({ onBack, rollNo: in
           </div>
           <div>
             <label className="form-label" style={{ fontSize: 11, fontWeight: 700, marginBottom: 6, display: 'block' }}>Enter Roll No or Student Name</label>
-            <input 
-              type="text" 
-              className="form-input" 
-              placeholder="e.g. 7377221EE001 or Nithin"
+            <input
+              type="text"
+              className="form-input"
+              placeholder="e.g. 71812503104 or Nithin"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               style={{ fontSize: 13, width: '100%', padding: '10px 12px', borderRadius: 10 }}

@@ -24,10 +24,10 @@ const getMockResponse = (input: string): string => {
     return "EEE graduates can target Core firms (like Siemens, ABB, L&T, Tesla, Ather Energy) requiring skills in Power Electronics, EV battery management, and microcontrollers. For IT recruitments (TCS, Zoho, Amazon), master Data Structures, OOPs, and Java/Python. See the Career Hub for company details!";
   }
   if (query.includes('credit') || query.includes('courses') || query.includes('credits') || query.includes('subject')) {
-    return "This semester (Sem VI), you have: Power System Operation & Control (3 credits), Transmission & Distribution (4 credits), Power Electronics (3 credits), Embedded Systems (3 credits), and Labs (2 credits each). Total credits: 17. View the 'Courses & Calendar' tab on your dashboard for the full list.";
+    return "This semester (SEM III), you have: Power System Operation & Control (3 credits), Transmission & Distribution (4 credits), Power Electronics (3 credits), Embedded Systems (3 credits), and Labs (2 credits each). Total credits: 17. View the 'Courses & Calendar' tab on your dashboard for the full list.";
   }
   if (query.includes('exam') || query.includes('date') || query.includes('schedule') || query.includes('cat') || query.includes('calendar')) {
-    return "Key Academic dates for Semester VI:\n- CAT-1: August 24 - 29, 2026\n- Electrify Hackathon: Sept 5, 2026\n- CAT-2: Oct 12 - 17, 2026\n- Model Practicals: Nov 2 - 7, 2026\n- End Sem Exams: Nov 20, 2026\nYou can see the detailed timetable in the Courses & Calendar portal.";
+    return "Key Academic dates for Semester III:\n- CAT-1: August 24 - 29, 2026\n- Electrify Hackathon: Sept 5, 2026\n- CAT-2: Oct 12 - 17, 2026\n- Model Practicals: Nov 2 - 7, 2026\n- End Sem Exams: Nov 20, 2026\nYou can see the detailed timetable in the Courses & Calendar portal.";
   }
   if (query.includes('nptel') || query.includes('certification')) {
     return "NPTEL registrations are highly recommended. You can add your registered exams in the NPTEL Tracker portal on the dashboard to log your credits. Make sure to pay and complete registrations before the final deadlines!";
@@ -47,7 +47,7 @@ const EEE_SYSTEM_PROMPT = `
 You are the AI Assistant for the Electrical and Electronics Engineering (EEE) Department Portal.
 You help students and teachers with academic regulations, course information, exams, hackathons, and careers.
 Here is the official context of the EEE Department:
-1. Courses (Semester VI):
+1. Courses (Semester III):
    - EE8601 Power System Operation and Control (Credits: 3)
    - EE8602 Transmission and Distribution (Credits: 4)
    - EE8603 Power Electronics (Credits: 3)

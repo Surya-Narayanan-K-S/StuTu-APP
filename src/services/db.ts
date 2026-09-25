@@ -384,7 +384,7 @@ const DEFAULT_SUGGESTIONS: Suggestion[] = [
 const DEFAULT_LAB_SEATS: LabSeatAssignment[] = [
   {
     id: 'seat-1',
-    rollNo: '7377221EE001',
+    rollNo: '71812503104',
     studentName: 'Nithin Annamalai',
     labName: 'Power Electronics & Drives Laboratory',
     block: 'EEE Main Block - 2nd Floor',
@@ -413,7 +413,7 @@ const DEFAULT_LAB_SEATS: LabSeatAssignment[] = [
     rollNo: '7377221EE003',
     studentName: 'Bhavani Shankar',
     labName: 'Embedded Systems Laboratory',
-    block: 'IT & EEE Block - 3rd Floor',
+    block: 'IT & EEE Block - 2nd Floor',
     roomNo: 'EB-308',
     benchNo: 'Bench C-12',
     systemNo: 'EMB-ARM-15',
@@ -426,12 +426,12 @@ const DEFAULT_LAB_SEATS: LabSeatAssignment[] = [
 const DEFAULT_STUDENTS: Student[] = [
   {
     id: 'student@eee.com',
-    rollNo: '7377221EE001',
+    rollNo: '71812503104',
     name: 'Nithin Annamalai',
     email: 'student@eee.com',
-    className: 'III EEE-A',
-    yearOfStudy: '3rd Year',
-    semester: 'Semester VI',
+    className: 'II EEE-B',
+    yearOfStudy: '2nd Year',
+    semester: 'Semester III',
     department: 'Dept of EEE',
     phone: '+91 98421 55678',
     bloodGroup: 'O+',
@@ -465,9 +465,9 @@ const DEFAULT_STUDENTS: Student[] = [
     rollNo: '7377221EE002',
     name: 'Aravind Swamy',
     email: 'student2@eee.com',
-    className: 'III EEE-A',
-    yearOfStudy: '3rd Year',
-    semester: 'Semester VI',
+    className: 'II EEE-B',
+    yearOfStudy: '2nd Year',
+    semester: 'Semester III',
     department: 'Dept of EEE',
     phone: '+91 97890 22341',
     bloodGroup: 'B+',
@@ -492,9 +492,9 @@ const DEFAULT_STUDENTS: Student[] = [
     rollNo: '7377221EE003',
     name: 'Bhavani Shankar',
     email: 'student3@eee.com',
-    className: 'III EEE-A',
-    yearOfStudy: '3rd Year',
-    semester: 'Semester VI',
+    className: 'II EEE-B',
+    yearOfStudy: '2nd Year',
+    semester: 'Semester III',
     department: 'Dept of EEE',
     phone: '+91 94421 99887',
     bloodGroup: 'A+',
@@ -519,9 +519,9 @@ const DEFAULT_STUDENTS: Student[] = [
     rollNo: '7377221EE004',
     name: 'Dinesh Kumar',
     email: 'student4@eee.com',
-    className: 'III EEE-B',
-    yearOfStudy: '3rd Year',
-    semester: 'Semester VI',
+    className: 'II EEE-B',
+    yearOfStudy: '2nd Year',
+    semester: 'Semester III',
     department: 'Dept of EEE',
     phone: '+91 99440 12345',
     bloodGroup: 'AB+',
@@ -595,7 +595,7 @@ const DEFAULT_TIMETABLE: TimetableEntry[] = [
   { id: 8, day: 'Mon', period: 8, subject: '25CS2261(L)', teacher: 'Faculty from AIDS department', semester: 6 },
 
   // Tuesday
-  { id: 9,  day: 'Tue', period: 1, subject: '25MA2114', teacher: 'Dr. V. Tharanidharan', semester: 6 },
+  { id: 9, day: 'Tue', period: 1, subject: '25MA2114', teacher: 'Dr. V. Tharanidharan', semester: 6 },
   { id: 10, day: 'Tue', period: 2, subject: '25MA2114', teacher: 'Dr. V. Tharanidharan', semester: 6 },
   { id: 11, day: 'Tue', period: 3, subject: '25EE2200', teacher: 'Dr. H. Vidhya', semester: 6 },
   { id: 12, day: 'Tue', period: 4, subject: '25EE2200', teacher: 'Dr. H. Vidhya', semester: 6 },
@@ -739,7 +739,7 @@ export const dbService = {
       console.warn('Supabase saveAnnouncement failed, using localStorage:', err.message || err);
       const localData = localStorage.getItem('eee_announcements');
       const list: Announcement[] = localData ? JSON.parse(localData) : [];
-      
+
       const index = list.findIndex(a => a.id === fullAnn.id);
       if (index > -1) {
         list[index] = fullAnn;
@@ -787,9 +787,9 @@ export const dbService = {
           rollNo: data.roll_no,
           name: data.name,
           email: data.email,
-          className: data.class_name || 'III EEE-A',
-          yearOfStudy: data.year_of_study || '3rd Year',
-          semester: data.semester || 'Semester VI',
+          className: data.class_name || 'II EEE-B',
+          yearOfStudy: data.year_of_study || '2nd Year',
+          semester: data.semester || 'Semester III',
           department: data.department || 'Dept of EEE',
           phone: data.phone || '+91 98421 55678',
           dob: data.dob || '2004-05-14',
@@ -866,7 +866,7 @@ export const dbService = {
           const existing = localStorage.getItem(extraKey);
           const parsed = existing ? JSON.parse(existing) : {};
           localStorage.setItem(extraKey, JSON.stringify({ ...parsed, ...updates }));
-        } catch {}
+        } catch { }
         return list[index];
       }
       throw new Error('Student profile not found');
@@ -1038,11 +1038,11 @@ export const dbService = {
       console.warn('Supabase saveAttendanceLogs failed, using localStorage:', err.message || err);
       const localData = localStorage.getItem('eee_attendance');
       const list: AttendanceLog[] = localData ? JSON.parse(localData) : [];
-      
+
       // Filter out duplicates for the same date and period, then append new logs
       const filtered = list.filter(l => !(l.date === date && l.period === period));
       filtered.push(...logsWithIds);
-      
+
       localStorage.setItem('eee_attendance', JSON.stringify(filtered));
       return true;
     }
@@ -1198,7 +1198,7 @@ export const dbService = {
       console.warn('Supabase saveMilestone failed, using localStorage:', err.message || err);
       const localData = localStorage.getItem('eee_milestones') || '[]';
       const list: Milestone[] = JSON.parse(localData);
-      
+
       if (milestone.id) {
         const idx = list.findIndex(m => m.id === milestone.id);
         if (idx > -1) {

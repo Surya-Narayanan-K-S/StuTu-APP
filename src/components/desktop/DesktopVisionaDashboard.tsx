@@ -191,7 +191,7 @@ export const DesktopVisionaDashboard: React.FC<DesktopVisionaDashboardProps> = (
         {/* Card 2: Target GPA Calculator Widget */}
         <div className="visiona-widget-card" style={{ flex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: '#1e293b', margin: '0 0 16px 0' }}>Semester Target Goal</h3>
-          
+
           <h2 style={{ fontSize: 32, fontWeight: 900, color: '#4f46e5', margin: '0 0 6px 0' }}>9.20 GPA</h2>
           <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 20px 0' }}>Required Internal Score: 88 / 100</p>
 
@@ -251,7 +251,7 @@ export const DesktopVisionaDashboard: React.FC<DesktopVisionaDashboardProps> = (
                 Attendance Analytics <span style={{ fontSize: 11, fontWeight: 800, color: '#16a34a', background: '#dcfce7', padding: '2px 8px', borderRadius: 10 }}>● On track</span>
               </h3>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>Semester VI</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>Semester III</span>
           </div>
 
           <div style={{ display: 'flex', gap: 24, marginBottom: 20 }}>
@@ -282,7 +282,7 @@ export const DesktopVisionaDashboard: React.FC<DesktopVisionaDashboardProps> = (
             {currentUser?.name || 'Nithin Annamalai'}
           </h3>
           <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 20px 0' }}>
-            {currentUser?.rollNo || '7377221EE001'} · III EEE-A · SREC
+            {currentUser?.rollNo || '71812503104'} · II EEE-B · SREC
           </p>
 
           <div style={{ display: 'flex', gap: 20, width: '100%', justifyContent: 'center', borderTop: '1px solid #f1f5f9', paddingTop: 16 }}>

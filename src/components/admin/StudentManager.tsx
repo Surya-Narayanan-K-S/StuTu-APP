@@ -52,7 +52,7 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
   const [addName, setAddName] = useState('');
   const [addRollNo, setAddRollNo] = useState('');
   const [addEmail, setAddEmail] = useState('');
-  const [addClassName, setAddClassName] = useState('III EEE-A');
+  const [addClassName, setAddClassName] = useState('II EEE-B');
   const [addPhone, setAddPhone] = useState('');
 
   useEffect(() => {
@@ -81,9 +81,9 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
     setEditName(student.name || '');
     setEditRollNo(student.rollNo || '');
     setEditEmail(student.email || '');
-    setEditClass(student.className || 'III EEE-A');
-    setEditYear(student.yearOfStudy || '3rd Year');
-    setEditSem(student.semester || 'Semester VI');
+    setEditClass(student.className || 'II EEE-B');
+    setEditYear(student.yearOfStudy || '2nd Year');
+    setEditSem(student.semester || 'Semester III');
     setEditPhone(student.phone || '+91 98421 55678');
     setEditDob(student.dob || '2004-05-14');
     setEditBlood(student.bloodGroup || 'O+');
@@ -143,8 +143,8 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
         rollNo: addRollNo.trim().toUpperCase(),
         email: addEmail.trim().toLowerCase(),
         className: addClassName,
-        yearOfStudy: '3rd Year',
-        semester: 'Semester VI',
+        yearOfStudy: '2nd Year',
+        semester: 'Semester III',
         department: 'Dept of EEE',
         phone: addPhone.trim() || '+91 98421 55678',
         dob: '2004-05-14',
@@ -202,8 +202,8 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
     const matchesArrears = selectedArrears === 'all'
       ? true
       : selectedArrears === 'clear'
-      ? (s.arrears || 0) === 0
-      : (s.arrears || 0) > 0;
+        ? (s.arrears || 0) === 0
+        : (s.arrears || 0) > 0;
     return matchesSearch && matchesClass && matchesArrears;
   });
 
@@ -308,8 +308,8 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                   style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 11.5, background: '#f8fafc', fontWeight: 600 }}
                 >
                   <option value="all">All Classes</option>
-                  <option value="III EEE-A">III EEE-A</option>
-                  <option value="III EEE-B">III EEE-B</option>
+                  <option value="II EEE-B">II EEE-B</option>
+                  <option value="II EEE-B">II EEE-B</option>
                 </select>
 
                 <select
@@ -364,7 +364,7 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                             </span>
                           </div>
                           <p style={{ margin: '3px 0 0', fontSize: 11, color: '#64748b' }}>
-                            {student.className || 'III EEE-A'} · {student.email}
+                            {student.className || 'II EEE-B'} · {student.email}
                           </p>
                         </div>
                       </div>
@@ -411,7 +411,7 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                     </span>
                   </div>
                   <p style={{ margin: '3px 0 0', fontSize: 12, color: '#64748b' }}>
-                    {selectedStudent.className || 'III EEE-A'} · {selectedStudent.email}
+                    {selectedStudent.className || 'II EEE-B'} · {selectedStudent.email}
                   </p>
                 </div>
               </div>
@@ -781,8 +781,8 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                     onChange={e => setAddClassName(e.target.value)}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 12 }}
                   >
-                    <option value="III EEE-A">III EEE-A</option>
-                    <option value="III EEE-B">III EEE-B</option>
+                    <option value="II EEE-B">II EEE-B</option>
+                    <option value="II EEE-B">II EEE-B</option>
                     <option value="IV EEE-A">IV EEE-A</option>
                     <option value="IV EEE-B">IV EEE-B</option>
                   </select>

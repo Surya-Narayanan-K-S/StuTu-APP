@@ -52,7 +52,7 @@ export const AcademicsTracker: React.FC<AcademicsTrackerProps> = ({ currentEmail
       } else {
         const fallbackStudent: Student = {
           id: currentEmail || 'student@eee.com',
-          rollNo: '7377221EE001',
+          rollNo: '71812503104',
           name: 'Nithin Annamalai',
           email: currentEmail || 'student@eee.com',
           cgpa: {
@@ -161,7 +161,7 @@ export const AcademicsTracker: React.FC<AcademicsTrackerProps> = ({ currentEmail
               📈 CGPA &amp; Academic Performance
             </h2>
             <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              {isAdmin && !selectedStudentEmail ? 'Institution Grade Console' : `Student ID: ${student?.rollNo || '7377221EE001'}`}
+              {isAdmin && !selectedStudentEmail ? 'Institution Grade Console' : `Student ID: ${student?.rollNo || '71812503104'}`}
             </span>
           </div>
         </div>

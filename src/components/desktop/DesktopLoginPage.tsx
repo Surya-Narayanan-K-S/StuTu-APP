@@ -16,7 +16,7 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
   const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
   const [email, setEmail] = useState('student@eee.com');
   const [name, setName] = useState('Nithin Annamalai');
-  const [rollNo, setRollNo] = useState('7377221EE001');
+  const [rollNo, setRollNo] = useState('71812503104');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -286,7 +286,7 @@ export const DesktopLoginPage: React.FC<DesktopLoginPageProps> = ({ onClose, onL
                   <label>Roll Number</label>
                   <div className="cosmic-input-wrapper">
                     <UserCheck size={16} className="cosmic-input-icon" />
-                    <input type="text" className="cosmic-input" placeholder="e.g. 7377221EE001" value={rollNo} onChange={e => setRollNo(e.target.value)} required />
+                    <input type="text" className="cosmic-input" placeholder="e.g. 71812503104" value={rollNo} onChange={e => setRollNo(e.target.value)} required />
                   </div>
                 </div>
               </>

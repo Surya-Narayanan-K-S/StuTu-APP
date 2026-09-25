@@ -63,11 +63,11 @@ const USER_PROFILES: UserProfile[] = [
   {
     email: 'student@eee.com',
     name: 'Nithin Annamalai',
-    rollNo: '7377221EE001',
+    rollNo: '71812503104',
     role: 'student',
-    className: 'III EEE-A',
-    yearOfStudy: '3rd Year',
-    semester: 'Semester VI',
+    className: 'II EEE-B',
+    yearOfStudy: '2nd Year',
+    semester: 'Semester III',
     department: 'Dept of EEE'
   },
   {
@@ -193,9 +193,9 @@ function App() {
               name,
               rollNo,
               role,
-              className: role === 'teacher' ? 'All EEE Classes' : 'III EEE-A',
-              yearOfStudy: role === 'teacher' ? 'Staff' : '3rd Year',
-              semester: role === 'teacher' ? 'Staff Portal' : 'Semester VI',
+              className: role === 'teacher' ? 'All EEE Classes' : 'II EEE-B',
+              yearOfStudy: role === 'teacher' ? 'Staff' : '2nd Year',
+              semester: role === 'teacher' ? 'Staff Portal' : 'Semester III',
               department: 'Dept of EEE'
             };
 
@@ -331,7 +331,7 @@ function App() {
           }
         });
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       if (listener && typeof listener.remove === 'function') {
@@ -1212,10 +1212,10 @@ function App() {
                 {currentTab === 'profile-details' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} mode="profile" currentUser={currentUser} onUpdateUser={(updated) => setCurrentUser(updated)} />}
                 {currentTab === 'profile' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} mode="documents" />}
                 {currentTab === 'certificates' && <ProfileDocs currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} mode="certificates" />}
-                {currentTab === 'request-letters' && <RequestLetters onBack={handleCloseModal} currentEmail={currentUser?.email || 'student@eee.com'} currentName={currentUser?.name || 'Nithin Annamalai'} currentRollNo={currentUser?.rollNo || '7377221EE001'} isAdmin={isAdmin} />}
-                {currentTab === 'lab-finder' && <LabSeatFinder onBack={handleCloseModal} rollNo={currentUser?.rollNo || '7377221EE001'} />}
+                {currentTab === 'request-letters' && <RequestLetters onBack={handleCloseModal} currentEmail={currentUser?.email || 'student@eee.com'} currentName={currentUser?.name || 'Nithin Annamalai'} currentRollNo={currentUser?.rollNo || '71812503104'} isAdmin={isAdmin} />}
+                {currentTab === 'lab-finder' && <LabSeatFinder onBack={handleCloseModal} rollNo={currentUser?.rollNo || '71812503104'} />}
                 {currentTab === 'cgpa-calc' && <GpaCalculator onBack={handleCloseModal} />}
-                {currentTab === 'attendance' && <AttendanceTracker currentStudentRollNo={currentUser?.rollNo || '7377221EE001'} currentUserName={currentUser?.name || 'Nithin Annamalai'} isAdmin={isAdmin} onBack={handleCloseModal} />}
+                {currentTab === 'attendance' && <AttendanceTracker currentStudentRollNo={currentUser?.rollNo || '71812503104'} currentUserName={currentUser?.name || 'Nithin Annamalai'} isAdmin={isAdmin} onBack={handleCloseModal} />}
                 {currentTab === 'nptel' && <NptelTracker currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} />}
                 {currentTab === 'academics' && <AcademicsTracker currentEmail={currentUser?.email || 'student@eee.com'} isAdmin={isAdmin} onBack={handleCloseModal} />}
                 {currentTab === 'career' && <CareerHub onBack={handleCloseModal} isAdmin={isAdmin} />}

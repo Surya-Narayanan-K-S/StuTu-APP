@@ -75,9 +75,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
               name: name.trim(),
               rollNo: rollNo.trim(),
               role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-              className: 'III EEE-A',
-              yearOfStudy: '3rd Year',
-              semester: 'Semester VI',
+              className: 'II EEE-B',
+              yearOfStudy: '2nd Year',
+              semester: 'Semester III',
               department: 'Dept of EEE'
             });
             setLoading(false);
@@ -90,9 +90,9 @@ export const SignInPage: React.FC<SignInPageProps> = ({ onClose, onLoginSuccess,
               name: name.trim(),
               rollNo: rollNo.trim(),
               role: targetEmail.toLowerCase() === 'teacher@eee.com' ? 'teacher' : 'student',
-              className: 'III EEE-A',
-              yearOfStudy: '3rd Year',
-              semester: 'Semester VI',
+              className: 'II EEE-B',
+              yearOfStudy: '2nd Year',
+              semester: 'Semester III',
               department: 'Dept of EEE'
             });
             setLoading(false);

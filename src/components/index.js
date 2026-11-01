@@ -22,6 +22,7 @@ export { ProfileDocs } from './services/ProfileDocs';
 export { RequestLetters } from './services/RequestLetters';
 export { PuzzleGames } from './services/PuzzleGames';
 export { TaskList } from './services/TaskList';
+export { BugReport } from './services/BugReport';
 export { StudentManager } from './admin/StudentManager';
 // Desktop Components
 export { DesktopLandingPage } from './desktop/DesktopLandingPage';

@@ -530,7 +530,27 @@ function App() {
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
                                                     gap: 6
-                                                }, children: [_jsx(User, { size: 13 }), " Sign In to Portal"] })) })] }), _jsxs("div", { style: { flex: 1, overflowY: 'auto', padding: '14px 14px 24px', display: 'flex', flexDirection: 'column', gap: 12 }, children: [_jsxs("div", { onClick: () => { setCurrentTab(null); setIsDrawerOpen(false); }, style: {
+                                                }, children: [_jsx(User, { size: 13 }), " Sign In to Portal"] })) })] }), _jsxs("div", { style: { flex: 1, overflowY: 'auto', padding: '14px 14px 24px', display: 'flex', flexDirection: 'column', gap: 12 }, children: [_jsxs("a", { href: "/EEE-SREC-Portal.apk", download: "EEE-SREC-Portal.apk", style: {
+                                                background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                                                color: '#ffffff',
+                                                borderRadius: 16,
+                                                padding: '11px 14px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                textDecoration: 'none',
+                                                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.28)',
+                                                cursor: 'pointer'
+                                            }, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: 10 }, children: [_jsx("div", { style: {
+                                                                width: 32,
+                                                                height: 32,
+                                                                borderRadius: 10,
+                                                                background: 'rgba(255, 255, 255, 0.22)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: 16
+                                                            }, children: "\uD83D\uDCF2" }), _jsxs("div", { children: [_jsx("div", { style: { fontSize: 13, fontWeight: 900, lineHeight: 1.2 }, children: "Download Android APK" }), _jsx("div", { style: { fontSize: 10, opacity: 0.88, fontWeight: 600 }, children: "Direct Mobile Install (30 MB)" })] })] }), _jsx("span", { style: { fontSize: 10, fontWeight: 900, background: '#ffffff', color: '#059669', padding: '3px 8px', borderRadius: 99 }, children: "GET" })] }), _jsxs("div", { onClick: () => { setCurrentTab(null); setIsDrawerOpen(false); }, style: {
                                                 background: currentTab === null ? 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)' : '#ffffff',
                                                 color: currentTab === null ? '#ffffff' : 'var(--text-main)',
                                                 borderRadius: 16,

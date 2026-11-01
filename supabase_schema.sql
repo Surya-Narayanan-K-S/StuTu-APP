@@ -223,6 +223,22 @@ CREATE TABLE IF NOT EXISTS lab_seats (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- 17. BUG REPORTS & SYSTEM ISSUE TICKETS
+CREATE TABLE IF NOT EXISTS bug_reports (
+  id TEXT PRIMARY KEY,
+  reporter_name TEXT NOT NULL,
+  reporter_email TEXT NOT NULL,
+  reporter_role TEXT NOT NULL DEFAULT 'student',
+  title TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('ui', 'academic', 'login', 'performance', 'crash', 'other')),
+  severity TEXT NOT NULL DEFAULT 'medium' CHECK (severity IN ('low', 'medium', 'high', 'critical')),
+  description TEXT NOT NULL,
+  device_info TEXT DEFAULT 'Web Browser',
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved', 'closed')),
+  admin_notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
 -- ====================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ====================================================
@@ -255,6 +271,7 @@ ALTER TABLE od_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE calendar_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE timetable_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lab_seats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bug_reports ENABLE ROW LEVEL SECURITY;
 
 -- Drop old legacy/permissive policies to prevent security holes
 DROP POLICY IF EXISTS "announcements_full_access" ON announcements;
@@ -377,6 +394,20 @@ CREATE POLICY "attendance_logs_write" ON attendance_logs
 CREATE POLICY "suggestions_insert" ON suggestions FOR INSERT WITH CHECK (true);
 CREATE POLICY "suggestions_select" ON suggestions FOR SELECT USING (is_faculty());
 CREATE POLICY "suggestions_delete" ON suggestions FOR DELETE USING (is_faculty());
+
+-- Bug Reports & Issue Tickets: Authenticated/Students submit, view own tickets; Faculty reviews all
+DROP POLICY IF EXISTS "bug_reports_insert" ON bug_reports;
+DROP POLICY IF EXISTS "bug_reports_select" ON bug_reports;
+DROP POLICY IF EXISTS "bug_reports_update" ON bug_reports;
+DROP POLICY IF EXISTS "bug_reports_delete" ON bug_reports;
+
+CREATE POLICY "bug_reports_insert" ON bug_reports FOR INSERT WITH CHECK (true);
+CREATE POLICY "bug_reports_select" ON bug_reports FOR SELECT 
+  USING (reporter_email = (auth.jwt() ->> 'email') OR is_faculty() OR auth.role() = 'anon');
+CREATE POLICY "bug_reports_update" ON bug_reports FOR UPDATE 
+  USING (is_faculty() OR reporter_email = (auth.jwt() ->> 'email'))
+  WITH CHECK (is_faculty() OR reporter_email = (auth.jwt() ->> 'email'));
+CREATE POLICY "bug_reports_delete" ON bug_reports FOR DELETE USING (is_faculty());
 
 -- STORAGE BUCKET SETUP
 INSERT INTO storage.buckets (id, name, public)

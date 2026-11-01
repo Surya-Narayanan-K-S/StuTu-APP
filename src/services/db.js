@@ -1764,5 +1764,128 @@ export const dbService = {
             localStorage.setItem('eee_students', JSON.stringify(list.filter(s => s.email.toLowerCase() !== email.toLowerCase())));
         }
         return true;
+    },
+    // --- Bug Reports & Issue Tickets ---
+    async getBugReports(reporterEmail = null) {
+        try {
+            let query = supabase.from('bug_reports').select('*').order('created_at', { ascending: false });
+            if (reporterEmail && reporterEmail.toLowerCase() !== 'teacher@eee.com' && !reporterEmail.includes('@srec.ac.in')) {
+                query = query.eq('reporter_email', reporterEmail);
+            }
+            const { data, error } = await query;
+            if (error)
+                throw error;
+            if (data && data.length > 0) {
+                return data.map(d => ({
+                    id: d.id,
+                    reporterName: d.reporter_name,
+                    reporterEmail: d.reporter_email,
+                    reporterRole: d.reporter_role,
+                    title: d.title,
+                    category: d.category,
+                    severity: d.severity,
+                    description: d.description,
+                    deviceInfo: d.device_info,
+                    status: d.status,
+                    adminNotes: d.admin_notes,
+                    createdAt: d.created_at
+                }));
+            }
+        }
+        catch (err) {
+            console.warn('Supabase getBugReports failed, using localStorage:', err.message || err);
+        }
+        const local = localStorage.getItem('eee_bug_reports');
+        const list = local ? JSON.parse(local) : [
+            {
+                id: 'bug-1',
+                reporterName: 'Nithin Annamalai',
+                reporterEmail: 'student@eee.com',
+                reporterRole: 'student',
+                title: 'Timetable period 4 overlapping on Thursday',
+                category: 'academic',
+                severity: 'medium',
+                description: 'Thursday period 4 shows Power Systems lab overlapping with Transmission and Distribution lecture.',
+                deviceInfo: 'Android Chrome / SREC Smart Hub',
+                status: 'in_progress',
+                adminNotes: 'HOD instructed tutor to adjust slot allocation.',
+                createdAt: '2026-10-28 10:30'
+            }
+        ];
+        if (reporterEmail && reporterEmail.toLowerCase() !== 'teacher@eee.com' && !reporterEmail.includes('@srec.ac.in')) {
+            return list.filter(b => b.reporterEmail.toLowerCase() === reporterEmail.toLowerCase());
+        }
+        return list;
+    },
+    async saveBugReport(report) {
+        const item = {
+            ...report,
+            id: report.id || 'bug_' + Date.now(),
+            status: report.status || 'open',
+            createdAt: report.createdAt || new Date().toISOString().replace('T', ' ').substring(0, 16)
+        };
+        try {
+            await supabase.from('bug_reports').upsert({
+                id: item.id,
+                reporter_name: item.reporterName,
+                reporter_email: item.reporterEmail,
+                reporter_role: item.reporterRole || 'student',
+                title: item.title,
+                category: item.category || 'other',
+                severity: item.severity || 'medium',
+                description: item.description,
+                device_info: item.deviceInfo || (typeof navigator !== 'undefined' ? navigator.userAgent : 'App Client'),
+                status: item.status,
+                admin_notes: item.adminNotes || ''
+            });
+        }
+        catch (err) {
+            console.warn('Supabase saveBugReport failed, using localStorage:', err.message || err);
+        }
+        const local = localStorage.getItem('eee_bug_reports');
+        const list = local ? JSON.parse(local) : [];
+        const idx = list.findIndex(b => b.id === item.id);
+        if (idx > -1) {
+            list[idx] = item;
+        }
+        else {
+            list.unshift(item);
+        }
+        localStorage.setItem('eee_bug_reports', JSON.stringify(list));
+        return item;
+    },
+    async updateBugReportStatus(id, status, adminNotes = '') {
+        try {
+            await supabase.from('bug_reports').update({ status, admin_notes: adminNotes }).eq('id', id);
+        }
+        catch (err) {
+            console.warn('Supabase updateBugReportStatus failed, using localStorage:', err.message || err);
+        }
+        const local = localStorage.getItem('eee_bug_reports');
+        if (local) {
+            const list = JSON.parse(local);
+            const idx = list.findIndex(b => b.id === id);
+            if (idx > -1) {
+                list[idx].status = status;
+                if (adminNotes)
+                    list[idx].adminNotes = adminNotes;
+                localStorage.setItem('eee_bug_reports', JSON.stringify(list));
+            }
+        }
+        return true;
+    },
+    async deleteBugReport(id) {
+        try {
+            await supabase.from('bug_reports').delete().eq('id', id);
+        }
+        catch (err) {
+            console.warn('Supabase deleteBugReport failed, using localStorage:', err.message || err);
+        }
+        const local = localStorage.getItem('eee_bug_reports');
+        if (local) {
+            const list = JSON.parse(local);
+            localStorage.setItem('eee_bug_reports', JSON.stringify(list.filter(b => b.id !== id)));
+        }
+        return true;
     }
 };

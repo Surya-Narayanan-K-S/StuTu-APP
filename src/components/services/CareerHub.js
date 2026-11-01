@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle2, Circle, Sparkles } from 'lucide-react';
 const DEFAULT_CONTENT = {
@@ -176,229 +177,97 @@ export const CareerHub = ({ onBack }) => {
         return acc + tasks.filter((_, tIdx) => completedSteps[`${activeTab}-${sIdx}-${tIdx}`]).length;
     }, 0);
     const masteryPercentage = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
-    return (<div className="dedicated-page-view page-slide-enter" style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 88 }}>
-      {/* Header with Small Back Button near Title */}
-      <div className="dedicated-page-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button className="page-back-btn" onClick={onBack} title="Go Back">
-            <ArrowLeft size={16}/>
-          </button>
-          <div>
-            <h2 className="dedicated-page-title" style={{ display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
-              🌳 Career Roadmaps &amp; Skill Tree
-            </h2>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-              Interactive Branching Roadmap &amp; Syllabus Tree
-            </span>
-          </div>
-        </div>
-
-        <div style={{ background: 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)', color: '#fff', padding: '6px 14px', borderRadius: 20, fontWeight: 800, fontSize: 11.5, display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(0,82,204,0.3)' }}>
-          <Sparkles size={14}/> {masteryPercentage}% Mastery
-        </div>
-      </div>
-
-      <div style={{ padding: '16px', maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Navigation Selector Pill Strip */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, background: '#ffffff', padding: 6, borderRadius: 20, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
-          {[
-            { id: 'gate', label: 'GATE Exam', icon: '🎓' },
-            { id: 'upsc', label: 'UPSC (ESE)', icon: '🏛️' },
-            { id: 'placement', label: 'Placements', icon: '💼' },
-        ].map(tab => (<button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-                padding: '10px 6px',
-                borderRadius: 14,
-                border: 'none',
-                background: activeTab === tab.id ? 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)' : 'transparent',
-                color: activeTab === tab.id ? '#ffffff' : '#64748b',
-                fontWeight: 800,
-                fontSize: 12,
-                cursor: 'pointer',
-                transition: 'all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                boxShadow: activeTab === tab.id ? '0 4px 12px rgba(0,82,204,0.35)' : 'none',
-                transform: activeTab === tab.id ? 'scale(1.02)' : 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6
-            }}>
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>))}
-        </div>
-
-        {/* Hero Card with Progress Meter */}
-        <div style={{
-            background: 'linear-gradient(135deg, #0052cc 0%, #1e40af 100%)',
-            borderRadius: 24,
-            padding: '20px',
-            color: '#ffffff',
-            boxShadow: '0 12px 30px rgba(0, 82, 204, 0.25)',
-            position: 'relative',
-            overflow: 'hidden'
-        }}>
-          <h3 style={{ margin: '0 0 4px 0', fontSize: 16, fontWeight: 900 }}>
-            {activeData.title}
-          </h3>
-          <p style={{ margin: '0 0 14px 0', fontSize: 11.5, opacity: 0.9, lineHeight: 1.4 }}>
-            {activeData.intro}
-          </p>
-
-          <div style={{ background: 'rgba(255,255,255,0.14)', padding: '12px 14px', borderRadius: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, fontWeight: 800, marginBottom: 6 }}>
-              <span>Interactive Roadmap Progress</span>
-              <span>{completedCount} of {totalTasks} Milestones ({masteryPercentage}%)</span>
-            </div>
-            <div style={{ width: '100%', height: 8, background: 'rgba(255,255,255,0.2)', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ width: `${masteryPercentage}%`, height: '100%', background: '#38bdf8', borderRadius: 4, transition: 'width 0.5s ease', boxShadow: '0 0 10px #38bdf8' }}/>
-            </div>
-          </div>
-        </div>
-
-        {/* 🌟 INTERACTIVE TREE ROADMAP 🌟 */}
-        <div style={{ background: '#ffffff', borderRadius: 28, padding: 22, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }}>
-              🌱 Interactive Milestone Skill Tree
-            </h4>
-            <span style={{ fontSize: 10.5, color: '#64748b', fontWeight: 700 }}>Tap tasks to check off</span>
-          </div>
-
-          {/* Tree Trunk Container */}
-          <div style={{ position: 'relative', paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {/* Glowing Vertical Trunk Line */}
-            <div style={{ position: 'absolute', top: 12, bottom: 20, left: 10, width: 3, background: 'linear-gradient(to bottom, #0052cc 0%, #38bdf8 50%, #10b981 100%)', borderRadius: 3 }}/>
-
-            {activeData.roadmap.map((step, sIdx) => {
-            const tasks = step.tasks || [step.desc];
-            const stepCompleted = tasks.every((_, tIdx) => completedSteps[`${activeTab}-${sIdx}-${tIdx}`]);
-            return (<div key={sIdx} style={{ position: 'relative' }}>
-                  {/* Glowing Node Orb on Trunk */}
-                  <div style={{
-                    position: 'absolute',
-                    left: -24 + 1,
-                    top: 12,
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    background: stepCompleted ? '#10b981' : '#0052cc',
-                    border: '3px solid #ffffff',
-                    boxShadow: stepCompleted ? '0 0 10px #10b981' : '0 0 10px rgba(0,82,204,0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 10,
-                    color: '#ffffff',
-                    zIndex: 2
-                }}>
-                    {stepCompleted ? '✓' : sIdx + 1}
-                  </div>
-
-                  {/* Branch Node Card */}
-                  <div style={{
-                    background: stepCompleted ? '#f0fdf4' : '#f8fafc',
-                    borderRadius: 18,
-                    padding: '14px 16px',
-                    border: '1.5px solid',
-                    borderColor: stepCompleted ? '#86efac' : 'rgba(0,82,204,0.12)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-                    transition: 'all 0.24s ease'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 18 }}>{step.icon || '📌'}</span>
-                      <h5 style={{ margin: 0, fontSize: 13, fontWeight: 900, color: 'var(--text-main)' }}>
-                        {step.title}
-                      </h5>
-                    </div>
-                    <p style={{ margin: '0 0 10px 0', fontSize: 11, color: '#64748b', lineHeight: 1.35 }}>
-                      {step.desc}
-                    </p>
-
-                    {/* Interactive Sub-tasks */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                      {tasks.map((task, tIdx) => {
-                    const isDone = !!completedSteps[`${activeTab}-${sIdx}-${tIdx}`];
-                    return (<div key={tIdx} onClick={() => toggleStep(`${activeTab}-${sIdx}-${tIdx}`)} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            cursor: 'pointer',
-                            padding: '6px 10px',
-                            borderRadius: 10,
-                            background: isDone ? 'rgba(16, 185, 129, 0.12)' : '#ffffff',
-                            border: '1px solid',
-                            borderColor: isDone ? 'rgba(16, 185, 129, 0.3)' : '#e2e8f0',
-                            transition: 'all 0.2s ease'
-                        }}>
-                            {isDone ? (<CheckCircle2 size={15} style={{ color: '#10b981', flexShrink: 0 }}/>) : (<Circle size={15} style={{ color: '#94a3b8', flexShrink: 0 }}/>)}
-                            <span style={{
-                            fontSize: 11.5,
-                            fontWeight: isDone ? 700 : 500,
-                            color: isDone ? '#166534' : 'var(--text-main)',
-                            textDecoration: isDone ? 'line-through' : 'none'
-                        }}>
-                              {task}
-                            </span>
-                          </div>);
-                })}
-                    </div>
-                  </div>
-                </div>);
-        })}
-          </div>
-        </div>
-
-        {/* 📚 SYLLABUS KNOWLEDGE BRANCHES */}
-        <div style={{ background: '#ffffff', borderRadius: 28, padding: 22, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <h4 style={{ margin: '0 0 14px 0', fontSize: 14, fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            📚 Core Syllabus Modules &amp; Domains
-          </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {activeData.syllabus.map((item, idx) => {
-            const [subject, ...topics] = item.split(':');
-            return (<div key={idx} style={{
-                    background: '#f8fafc',
-                    borderRadius: 16,
-                    padding: '12px 14px',
-                    border: '1px solid rgba(0,82,204,0.08)',
-                    borderLeft: '4px solid var(--accent-blue)'
-                }}>
-                  <span style={{ fontSize: 12.5, fontWeight: 900, color: 'var(--accent-blue)', display: 'block', marginBottom: 2 }}>
-                    {subject}
-                  </span>
-                  <span style={{ fontSize: 11, color: '#64748b', lineHeight: 1.35 }}>
-                    {topics.join(':')}
-                  </span>
-                </div>);
-        })}
-          </div>
-        </div>
-
-        {/* 🏢 RECRUITMENT & TARGET COMPANIES */}
-        <div style={{ background: '#ffffff', borderRadius: 28, padding: 22, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <h4 style={{ margin: '0 0 14px 0', fontSize: 14, fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            🏢 Target Recruiters &amp; Skill Profiles
-          </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-            {activeData.jobs.map((job, jIdx) => (<div key={jIdx} style={{
-                background: '#f8fafc',
-                borderRadius: 16,
-                padding: '12px 16px',
-                border: '1px solid rgba(0,82,204,0.08)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-                <div>
-                  <h5 style={{ margin: 0, fontSize: 13, fontWeight: 900, color: 'var(--text-main)' }}>{job.name}</h5>
-                  <span style={{ fontSize: 11, color: '#64748b' }}>Skills: {job.skills}</span>
-                </div>
-                <span style={{ padding: '4px 10px', borderRadius: 12, background: 'rgba(0,82,204,0.1)', color: 'var(--accent-blue)', fontSize: 10.5, fontWeight: 800 }}>
-                  High Demand
-                </span>
-              </div>))}
-          </div>
-        </div>
-      </div>
-    </div>);
+    return (_jsxs("div", { className: "dedicated-page-view page-slide-enter", style: { background: '#f8fafc', minHeight: '100vh', paddingBottom: 88 }, children: [_jsxs("div", { className: "dedicated-page-header", children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: 10 }, children: [_jsx("button", { className: "page-back-btn", onClick: onBack, title: "Go Back", children: _jsx(ArrowLeft, { size: 16 }) }), _jsxs("div", { children: [_jsx("h2", { className: "dedicated-page-title", style: { display: 'flex', alignItems: 'center', gap: 6, margin: 0 }, children: "\uD83C\uDF33 Career Roadmaps & Skill Tree" }), _jsx("span", { style: { fontSize: 11, color: 'var(--text-muted)' }, children: "Interactive Branching Roadmap & Syllabus Tree" })] })] }), _jsxs("div", { style: { background: 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)', color: '#fff', padding: '6px 14px', borderRadius: 20, fontWeight: 800, fontSize: 11.5, display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(0,82,204,0.3)' }, children: [_jsx(Sparkles, { size: 14 }), " ", masteryPercentage, "% Mastery"] })] }), _jsxs("div", { style: { padding: '16px', maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }, children: [_jsx("div", { style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, background: '#ffffff', padding: 6, borderRadius: 20, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }, children: [
+                            { id: 'gate', label: 'GATE Exam', icon: '🎓' },
+                            { id: 'upsc', label: 'UPSC (ESE)', icon: '🏛️' },
+                            { id: 'placement', label: 'Placements', icon: '💼' },
+                        ].map(tab => (_jsxs("button", { onClick: () => setActiveTab(tab.id), style: {
+                                padding: '10px 6px',
+                                borderRadius: 14,
+                                border: 'none',
+                                background: activeTab === tab.id ? 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)' : 'transparent',
+                                color: activeTab === tab.id ? '#ffffff' : '#64748b',
+                                fontWeight: 800,
+                                fontSize: 12,
+                                cursor: 'pointer',
+                                transition: 'all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                boxShadow: activeTab === tab.id ? '0 4px 12px rgba(0,82,204,0.35)' : 'none',
+                                transform: activeTab === tab.id ? 'scale(1.02)' : 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 6
+                            }, children: [_jsx("span", { children: tab.icon }), _jsx("span", { children: tab.label })] }, tab.id))) }), _jsxs("div", { style: {
+                            background: 'linear-gradient(135deg, #0052cc 0%, #1e40af 100%)',
+                            borderRadius: 24,
+                            padding: '20px',
+                            color: '#ffffff',
+                            boxShadow: '0 12px 30px rgba(0, 82, 204, 0.25)',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }, children: [_jsx("h3", { style: { margin: '0 0 4px 0', fontSize: 16, fontWeight: 900 }, children: activeData.title }), _jsx("p", { style: { margin: '0 0 14px 0', fontSize: 11.5, opacity: 0.9, lineHeight: 1.4 }, children: activeData.intro }), _jsxs("div", { style: { background: 'rgba(255,255,255,0.14)', padding: '12px 14px', borderRadius: 16 }, children: [_jsxs("div", { style: { display: 'flex', justifyContent: 'space-between', fontSize: 11.5, fontWeight: 800, marginBottom: 6 }, children: [_jsx("span", { children: "Interactive Roadmap Progress" }), _jsxs("span", { children: [completedCount, " of ", totalTasks, " Milestones (", masteryPercentage, "%)"] })] }), _jsx("div", { style: { width: '100%', height: 8, background: 'rgba(255,255,255,0.2)', borderRadius: 4, overflow: 'hidden' }, children: _jsx("div", { style: { width: `${masteryPercentage}%`, height: '100%', background: '#38bdf8', borderRadius: 4, transition: 'width 0.5s ease', boxShadow: '0 0 10px #38bdf8' } }) })] })] }), _jsxs("div", { style: { background: '#ffffff', borderRadius: 28, padding: 22, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }, children: [_jsxs("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }, children: [_jsx("h4", { style: { margin: 0, fontSize: 14, fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }, children: "\uD83C\uDF31 Interactive Milestone Skill Tree" }), _jsx("span", { style: { fontSize: 10.5, color: '#64748b', fontWeight: 700 }, children: "Tap tasks to check off" })] }), _jsxs("div", { style: { position: 'relative', paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 20 }, children: [_jsx("div", { style: { position: 'absolute', top: 12, bottom: 20, left: 10, width: 3, background: 'linear-gradient(to bottom, #0052cc 0%, #38bdf8 50%, #10b981 100%)', borderRadius: 3 } }), activeData.roadmap.map((step, sIdx) => {
+                                        const tasks = step.tasks || [step.desc];
+                                        const stepCompleted = tasks.every((_, tIdx) => completedSteps[`${activeTab}-${sIdx}-${tIdx}`]);
+                                        return (_jsxs("div", { style: { position: 'relative' }, children: [_jsx("div", { style: {
+                                                        position: 'absolute',
+                                                        left: -24 + 1,
+                                                        top: 12,
+                                                        width: 20,
+                                                        height: 20,
+                                                        borderRadius: '50%',
+                                                        background: stepCompleted ? '#10b981' : '#0052cc',
+                                                        border: '3px solid #ffffff',
+                                                        boxShadow: stepCompleted ? '0 0 10px #10b981' : '0 0 10px rgba(0,82,204,0.4)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: 10,
+                                                        color: '#ffffff',
+                                                        zIndex: 2
+                                                    }, children: stepCompleted ? '✓' : sIdx + 1 }), _jsxs("div", { style: {
+                                                        background: stepCompleted ? '#f0fdf4' : '#f8fafc',
+                                                        borderRadius: 18,
+                                                        padding: '14px 16px',
+                                                        border: '1.5px solid',
+                                                        borderColor: stepCompleted ? '#86efac' : 'rgba(0,82,204,0.12)',
+                                                        boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                                                        transition: 'all 0.24s ease'
+                                                    }, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }, children: [_jsx("span", { style: { fontSize: 18 }, children: step.icon || '📌' }), _jsx("h5", { style: { margin: 0, fontSize: 13, fontWeight: 900, color: 'var(--text-main)' }, children: step.title })] }), _jsx("p", { style: { margin: '0 0 10px 0', fontSize: 11, color: '#64748b', lineHeight: 1.35 }, children: step.desc }), _jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 8, borderTop: '1px solid rgba(0,0,0,0.06)' }, children: tasks.map((task, tIdx) => {
+                                                                const isDone = !!completedSteps[`${activeTab}-${sIdx}-${tIdx}`];
+                                                                return (_jsxs("div", { onClick: () => toggleStep(`${activeTab}-${sIdx}-${tIdx}`), style: {
+                                                                        display: 'flex',
+                                                                        alignItems: 'center',
+                                                                        gap: 8,
+                                                                        cursor: 'pointer',
+                                                                        padding: '6px 10px',
+                                                                        borderRadius: 10,
+                                                                        background: isDone ? 'rgba(16, 185, 129, 0.12)' : '#ffffff',
+                                                                        border: '1px solid',
+                                                                        borderColor: isDone ? 'rgba(16, 185, 129, 0.3)' : '#e2e8f0',
+                                                                        transition: 'all 0.2s ease'
+                                                                    }, children: [isDone ? (_jsx(CheckCircle2, { size: 15, style: { color: '#10b981', flexShrink: 0 } })) : (_jsx(Circle, { size: 15, style: { color: '#94a3b8', flexShrink: 0 } })), _jsx("span", { style: {
+                                                                                fontSize: 11.5,
+                                                                                fontWeight: isDone ? 700 : 500,
+                                                                                color: isDone ? '#166534' : 'var(--text-main)',
+                                                                                textDecoration: isDone ? 'line-through' : 'none'
+                                                                            }, children: task })] }, tIdx));
+                                                            }) })] })] }, sIdx));
+                                    })] })] }), _jsxs("div", { style: { background: '#ffffff', borderRadius: 28, padding: 22, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }, children: [_jsx("h4", { style: { margin: '0 0 14px 0', fontSize: 14, fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }, children: "\uD83D\uDCDA Core Syllabus Modules & Domains" }), _jsx("div", { style: { display: 'flex', flexDirection: 'column', gap: 8 }, children: activeData.syllabus.map((item, idx) => {
+                                    const [subject, ...topics] = item.split(':');
+                                    return (_jsxs("div", { style: {
+                                            background: '#f8fafc',
+                                            borderRadius: 16,
+                                            padding: '12px 14px',
+                                            border: '1px solid rgba(0,82,204,0.08)',
+                                            borderLeft: '4px solid var(--accent-blue)'
+                                        }, children: [_jsx("span", { style: { fontSize: 12.5, fontWeight: 900, color: 'var(--accent-blue)', display: 'block', marginBottom: 2 }, children: subject }), _jsx("span", { style: { fontSize: 11, color: '#64748b', lineHeight: 1.35 }, children: topics.join(':') })] }, idx));
+                                }) })] }), _jsxs("div", { style: { background: '#ffffff', borderRadius: 28, padding: 22, border: '1.5px solid rgba(0,82,204,0.12)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }, children: [_jsx("h4", { style: { margin: '0 0 14px 0', fontSize: 14, fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 8 }, children: "\uD83C\uDFE2 Target Recruiters & Skill Profiles" }), _jsx("div", { style: { display: 'grid', gridTemplateColumns: '1fr', gap: 10 }, children: activeData.jobs.map((job, jIdx) => (_jsxs("div", { style: {
+                                        background: '#f8fafc',
+                                        borderRadius: 16,
+                                        padding: '12px 16px',
+                                        border: '1px solid rgba(0,82,204,0.08)',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }, children: [_jsxs("div", { children: [_jsx("h5", { style: { margin: 0, fontSize: 13, fontWeight: 900, color: 'var(--text-main)' }, children: job.name }), _jsxs("span", { style: { fontSize: 11, color: '#64748b' }, children: ["Skills: ", job.skills] })] }), _jsx("span", { style: { padding: '4px 10px', borderRadius: 12, background: 'rgba(0,82,204,0.1)', color: 'var(--accent-blue)', fontSize: 10.5, fontWeight: 800 }, children: "High Demand" })] }, jIdx))) })] })] })] }));
 };

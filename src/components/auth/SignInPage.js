@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import React, { useState, useEffect } from 'react';
 import { X, Lock, Mail, Eye, EyeOff, UserCheck, CheckCircle2, User, Download } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -170,125 +171,14 @@ export const SignInPage = ({ onClose, onLoginSuccess, demoProfiles, initialIsSig
         setIsSignUp(false);
     };
     void _fillDemo;
-    return (<div className="signin-page-overlay">
-      {/* ── Top Header with Curved Landscape Wave Overlay ── */}
-      <div className="mobile-curved-header">
-        <div className="mobile-header-nav">
-          {onClose && (<button className="signin-back-btn" onClick={onClose}>
-              <X size={18}/>
-            </button>)}
-          {!isNative && (<a href="/download.html" className="signin-get-started-btn" title="Download Android APK">
-              <Download size={13}/>
-              <span>Get APK</span>
-            </a>)}
-        </div>
-
-        <div className="mobile-header-title-wrap">
-          <div style={{ width: 52, height: 52, borderRadius: 16, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.4)', marginBottom: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}>
-            <img src={appLogo} alt="TutorWard Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-          </div>
-          <h1 className="mobile-header-h1">{isSignUp ? 'Create Account' : 'Sign In'}</h1>
-          <p className="mobile-header-p">TutorWard · EEE SREC Academic Portal</p>
-        </div>
-
-        {/* Organic Curved Bottom Wave SVG (Matching Screenshot) */}
-        <div className="mobile-wave-mask">
-          <svg viewBox="0 0 500 120" preserveAspectRatio="none">
-            <path d="M 0 0 C 150 100 350 -20 500 60 L 500 120 L 0 120 Z" fill="#ffffff"/>
-          </svg>
-        </div>
-      </div>
-
-      {/* ── Clean White Card Form Sheet ── */}
-      <div className="mobile-form-sheet">
-        {error && (<div className="signin-error-banner">
-            <span>⚠️ {error}</span>
-          </div>)}
-
-        {forgotSent && (<div className="signin-success-banner">
-            <CheckCircle2 size={16}/>
-            <span>Password reset link sent to registered email!</span>
-          </div>)}
-
-        <form onSubmit={handleSubmit} className="mobile-underlined-form">
-          {isSignUp && (<>
-              <div className="mobile-field-row">
-                <User size={18} className="field-row-icon"/>
-                <input type="text" placeholder="Full Name" value={name} onChange={e => setName(e.target.value)} className="mobile-underlined-input" required/>
-              </div>
-
-              <div className="mobile-field-row">
-                <UserCheck size={18} className="field-row-icon"/>
-                <input type="text" placeholder="Roll Number (e.g. 71812503104)" value={rollNo} onChange={e => setRollNo(e.target.value)} className="mobile-underlined-input" required/>
-              </div>
-            </>)}
-
-          <div className="mobile-field-row">
-            <Mail size={18} className="field-row-icon"/>
-            <input type="email" placeholder="Email address or Roll No" value={email} onChange={e => setEmail(e.target.value)} className="mobile-underlined-input" required/>
-            {email.includes('@') && <CheckCircle2 size={16} className="field-check-icon"/>}
-          </div>
-
-          <div className="mobile-field-row">
-            <Lock size={18} className="field-row-icon"/>
-            <input type={showPassword ? 'text' : 'password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="mobile-underlined-input" required/>
-            <button type="button" className="field-eye-btn" onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
-            </button>
-          </div>
-
-          {!isSignUp && (<div style={{ textAlign: 'right', marginTop: -4, marginBottom: 8 }}>
-              <button type="button" className="signin-forgot-btn" onClick={() => setForgotSent(true)}>
-                Forgot password?
-              </button>
-            </div>)}
-
-          {/* Primary Blue Pill Submit Button */}
-          <button type="submit" className="mobile-blue-pill-btn" disabled={loading}>
-            {loading ? 'Authenticating...' : isSignUp ? 'Sign Up' : 'Sign In'}
-          </button>
-
-          {/* Mode Switch Pill Button */}
-          <button type="button" className="mobile-outline-pill-btn" onClick={() => setIsSignUp(!isSignUp)}>
-            {isSignUp ? 'Already have an account? Sign In' : 'Don’t have an account? Sign Up'}
-          </button>
-        </form>
-
-        {/* ⚡ 1-Click Dev Demo Sign In */}
-        <div style={{ marginTop: 22, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 10 }}>
-            <span style={{ fontSize: 10, fontWeight: 900, color: '#4338ca', letterSpacing: 0.8, textTransform: 'uppercase' }}>
-              ⚡ 1-CLICK DEV DEMO SIGN IN
-            </span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {demoProfiles.map((p, idx) => (<button key={idx} type="button" onClick={() => onLoginSuccess(p)} className="demo-chip-btn" style={{
-                background: p.role === 'teacher' ? 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                border: `1.5px solid ${p.role === 'teacher' ? '#ea580c40' : '#2563eb40'}`,
-                borderRadius: 12,
-                padding: '10px 8px',
-                cursor: 'pointer',
-                textAlign: 'left',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                transition: 'transform 0.15s ease'
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                  <span style={{ fontSize: 11, fontWeight: 900, color: p.role === 'teacher' ? '#ea580c' : '#2563eb' }}>
-                    {p.role === 'teacher' ? '👨‍🏫 Faculty' : '🎓 Student'}
-                  </span>
-                  <span style={{ fontSize: 8.5, fontWeight: 800, background: p.role === 'teacher' ? '#ea580c' : '#2563eb', color: '#fff', padding: '1px 5px', borderRadius: 6 }}>
-                    INSTANT
-                  </span>
-                </div>
-                <div style={{ fontSize: 12, fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {p.name}
-                </div>
-                <div style={{ fontSize: 9.5, color: '#64748b' }}>
-                  {p.role === 'teacher' ? 'FAC001 · All Classes' : p.rollNo}
-                </div>
-              </button>))}
-          </div>
-        </div>
-      </div>
-    </div>);
+    return (_jsxs("div", { className: "signin-page-overlay", children: [_jsxs("div", { className: "mobile-curved-header", children: [_jsxs("div", { className: "mobile-header-nav", children: [onClose && (_jsx("button", { className: "signin-back-btn", onClick: onClose, children: _jsx(X, { size: 18 }) })), !isNative && (_jsxs("a", { href: "/download.html", className: "signin-get-started-btn", title: "Download Android APK", children: [_jsx(Download, { size: 13 }), _jsx("span", { children: "Get APK" })] }))] }), _jsxs("div", { className: "mobile-header-title-wrap", children: [_jsx("div", { style: { width: 52, height: 52, borderRadius: 16, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.4)', marginBottom: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }, children: _jsx("img", { src: appLogo, alt: "TutorWard Logo", style: { width: '100%', height: '100%', objectFit: 'cover' } }) }), _jsx("h1", { className: "mobile-header-h1", children: isSignUp ? 'Create Account' : 'Sign In' }), _jsx("p", { className: "mobile-header-p", children: "TutorWard \u00B7 EEE SREC Academic Portal" })] }), _jsx("div", { className: "mobile-wave-mask", children: _jsx("svg", { viewBox: "0 0 500 120", preserveAspectRatio: "none", children: _jsx("path", { d: "M 0 0 C 150 100 350 -20 500 60 L 500 120 L 0 120 Z", fill: "#ffffff" }) }) })] }), _jsxs("div", { className: "mobile-form-sheet", children: [error && (_jsx("div", { className: "signin-error-banner", children: _jsxs("span", { children: ["\u26A0\uFE0F ", error] }) })), forgotSent && (_jsxs("div", { className: "signin-success-banner", children: [_jsx(CheckCircle2, { size: 16 }), _jsx("span", { children: "Password reset link sent to registered email!" })] })), _jsxs("form", { onSubmit: handleSubmit, className: "mobile-underlined-form", children: [isSignUp && (_jsxs(_Fragment, { children: [_jsxs("div", { className: "mobile-field-row", children: [_jsx(User, { size: 18, className: "field-row-icon" }), _jsx("input", { type: "text", placeholder: "Full Name", value: name, onChange: e => setName(e.target.value), className: "mobile-underlined-input", required: true })] }), _jsxs("div", { className: "mobile-field-row", children: [_jsx(UserCheck, { size: 18, className: "field-row-icon" }), _jsx("input", { type: "text", placeholder: "Roll Number (e.g. 71812503104)", value: rollNo, onChange: e => setRollNo(e.target.value), className: "mobile-underlined-input", required: true })] })] })), _jsxs("div", { className: "mobile-field-row", children: [_jsx(Mail, { size: 18, className: "field-row-icon" }), _jsx("input", { type: "email", placeholder: "Email address or Roll No", value: email, onChange: e => setEmail(e.target.value), className: "mobile-underlined-input", required: true }), email.includes('@') && _jsx(CheckCircle2, { size: 16, className: "field-check-icon" })] }), _jsxs("div", { className: "mobile-field-row", children: [_jsx(Lock, { size: 18, className: "field-row-icon" }), _jsx("input", { type: showPassword ? 'text' : 'password', placeholder: "Password", value: password, onChange: e => setPassword(e.target.value), className: "mobile-underlined-input", required: true }), _jsx("button", { type: "button", className: "field-eye-btn", onClick: () => setShowPassword(!showPassword), children: showPassword ? _jsx(EyeOff, { size: 16 }) : _jsx(Eye, { size: 16 }) })] }), !isSignUp && (_jsx("div", { style: { textAlign: 'right', marginTop: -4, marginBottom: 8 }, children: _jsx("button", { type: "button", className: "signin-forgot-btn", onClick: () => setForgotSent(true), children: "Forgot password?" }) })), _jsx("button", { type: "submit", className: "mobile-blue-pill-btn", disabled: loading, children: loading ? 'Authenticating...' : isSignUp ? 'Sign Up' : 'Sign In' }), _jsx("button", { type: "button", className: "mobile-outline-pill-btn", onClick: () => setIsSignUp(!isSignUp), children: isSignUp ? 'Already have an account? Sign In' : 'Don’t have an account? Sign Up' })] }), _jsxs("div", { style: { marginTop: 22, paddingTop: 16, borderTop: '1px solid #f1f5f9' }, children: [_jsx("div", { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 10 }, children: _jsx("span", { style: { fontSize: 10, fontWeight: 900, color: '#4338ca', letterSpacing: 0.8, textTransform: 'uppercase' }, children: "\u26A1 1-CLICK DEV DEMO SIGN IN" }) }), _jsx("div", { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }, children: demoProfiles.map((p, idx) => (_jsxs("button", { type: "button", onClick: () => onLoginSuccess(p), className: "demo-chip-btn", style: {
+                                        background: p.role === 'teacher' ? 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                                        border: `1.5px solid ${p.role === 'teacher' ? '#ea580c40' : '#2563eb40'}`,
+                                        borderRadius: 12,
+                                        padding: '10px 8px',
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                                        transition: 'transform 0.15s ease'
+                                    }, children: [_jsxs("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }, children: [_jsx("span", { style: { fontSize: 11, fontWeight: 900, color: p.role === 'teacher' ? '#ea580c' : '#2563eb' }, children: p.role === 'teacher' ? '👨‍🏫 Faculty' : '🎓 Student' }), _jsx("span", { style: { fontSize: 8.5, fontWeight: 800, background: p.role === 'teacher' ? '#ea580c' : '#2563eb', color: '#fff', padding: '1px 5px', borderRadius: 6 }, children: "INSTANT" })] }), _jsx("div", { style: { fontSize: 12, fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }, children: p.name }), _jsx("div", { style: { fontSize: 9.5, color: '#64748b' }, children: p.role === 'teacher' ? 'FAC001 · All Classes' : p.rollNo })] }, idx))) })] })] })] }));
 };

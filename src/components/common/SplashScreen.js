@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import { Sparkles, LogIn, UserPlus } from 'lucide-react';
 import appLogo from '../../assets/app-logo.png';
@@ -8,40 +9,5 @@ export const SplashScreen = ({ onFinish, onSelectAuth }) => {
         }
         onFinish();
     };
-    return (<div className="splash-screen-container">
-      <div className="splash-glow-bg"/>
-      
-      <div className="splash-content">
-        <div className="splash-logo-wrapper">
-          <div className="splash-logo-circle" style={{ padding: 0, background: '#ffffff', borderRadius: 24, overflow: 'hidden', border: '3px solid rgba(255, 255, 255, 0.8)' }}>
-            <img src={appLogo} alt="EEE SREC Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-          </div>
-          <div className="splash-logo-badge">
-            <Sparkles size={12} fill="currentColor"/>
-            <span>2026 EDITION</span>
-          </div>
-        </div>
-
-        <div className="splash-text-section">
-          <h1 className="splash-title">EEE SREC PORTAL</h1>
-          <p className="splash-subtitle">Smart Mobile Student Hub</p>
-          <p className="splash-college">Sri Ramakrishna Engineering College · Dept of EEE</p>
-        </div>
-
-        {/* Sleek Minimal Glowing Line Divider */}
-        <div className="splash-divider-line"/>
-
-        {/* 🔐 Sign In or Sign Up Choice Buttons */}
-        <div className="splash-auth-actions">
-          <button className="splash-auth-btn signin" onClick={() => handleAction(false)}>
-            <LogIn size={16}/>
-            <span>Sign In</span>
-          </button>
-          <button className="splash-auth-btn signup" onClick={() => handleAction(true)}>
-            <UserPlus size={16}/>
-            <span>Sign Up</span>
-          </button>
-        </div>
-      </div>
-    </div>);
+    return (_jsxs("div", { className: "splash-screen-container", children: [_jsx("div", { className: "splash-glow-bg" }), _jsxs("div", { className: "splash-content", children: [_jsxs("div", { className: "splash-logo-wrapper", children: [_jsx("div", { className: "splash-logo-circle", style: { padding: 0, background: '#ffffff', borderRadius: 24, overflow: 'hidden', border: '3px solid rgba(255, 255, 255, 0.8)' }, children: _jsx("img", { src: appLogo, alt: "EEE SREC Logo", style: { width: '100%', height: '100%', objectFit: 'cover' } }) }), _jsxs("div", { className: "splash-logo-badge", children: [_jsx(Sparkles, { size: 12, fill: "currentColor" }), _jsx("span", { children: "2026 EDITION" })] })] }), _jsxs("div", { className: "splash-text-section", children: [_jsx("h1", { className: "splash-title", children: "EEE SREC PORTAL" }), _jsx("p", { className: "splash-subtitle", children: "Smart Mobile Student Hub" }), _jsx("p", { className: "splash-college", children: "Sri Ramakrishna Engineering College \u00B7 Dept of EEE" })] }), _jsx("div", { className: "splash-divider-line" }), _jsxs("div", { className: "splash-auth-actions", children: [_jsxs("button", { className: "splash-auth-btn signin", onClick: () => handleAction(false), children: [_jsx(LogIn, { size: 16 }), _jsx("span", { children: "Sign In" })] }), _jsxs("button", { className: "splash-auth-btn signup", onClick: () => handleAction(true), children: [_jsx(UserPlus, { size: 16 }), _jsx("span", { children: "Sign Up" })] })] })] })] }));
 };

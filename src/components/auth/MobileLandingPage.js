@@ -1,127 +1,20 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import { ArrowRight, ShieldCheck, Award, GraduationCap, Zap, UserCheck, FileText, BookOpen } from 'lucide-react';
 import appLogo from '../../assets/app-logo.png';
 export const MobileLandingPage = ({ onOpenLogin, demoProfiles, onDemoLogin }) => {
-    return (<div className="mobile-landing-wrapper">
-      {/* ── Top Hero with Scenic Nature Background & Curved Wave ── */}
-      <div className="mobile-landing-hero">
-        <div className="mobile-landing-brand-badge">
-          <div className="mobile-landing-logo-box">
-            <img src={appLogo} alt="TutorWard Logo" className="mobile-landing-logo-img"/>
-          </div>
-          <span className="mobile-landing-tag">DEPT OF EEE · SREC</span>
-        </div>
-
-        <h1 className="mobile-landing-title">
-          TutorWard
-        </h1>
-        <p className="mobile-landing-subtitle">
-          LEARN · GROW · SUCCEED
-        </p>
-        <p className="mobile-landing-desc">
-          Smart Academic &amp; Attendance Management Hub for Electrical &amp; Electronics Engineering Students.
-        </p>
-
-        {/* Action Buttons */}
-        <div className="mobile-landing-cta-group">
-          <button className="mobile-primary-pill-btn" onClick={() => onOpenLogin(false)}>
-            Sign In <ArrowRight size={16}/>
-          </button>
-          <button className="mobile-secondary-pill-btn" onClick={() => onOpenLogin(true)}>
-            Create Account
-          </button>
-        </div>
-
-        {/* ⚡ Quick Dev Demo 1-Click Access on Landing Page */}
-        {demoProfiles && onDemoLogin && (<div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 5, position: 'relative' }}>
-            <span style={{ fontSize: 9.5, fontWeight: 900, color: 'rgba(255,255,255,0.85)', letterSpacing: 0.8, textTransform: 'uppercase' }}>
-              ⚡ QUICK DEV DEMO ACCESS
-            </span>
-            <div style={{ display: 'flex', gap: 8, width: '100%', maxWidth: 320 }}>
-              {demoProfiles.map((p, idx) => (<button key={idx} onClick={() => onDemoLogin(p)} style={{
-                    flex: 1,
-                    background: p.role === 'teacher' ? 'rgba(234, 88, 12, 0.85)' : 'rgba(37, 99, 235, 0.85)',
-                    backdropFilter: 'blur(8px)',
-                    border: '1.5px solid rgba(255,255,255,0.4)',
-                    color: '#ffffff',
-                    padding: '8px 6px',
-                    borderRadius: 12,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    boxShadow: '0 4px 14px rgba(0,0,0,0.25)'
-                }}>
-                  <span style={{ fontSize: 10, fontWeight: 900 }}>
-                    {p.role === 'teacher' ? '👨‍🏫 Demo Staff' : '🎓 Demo Student'}
-                  </span>
-                  <span style={{ fontSize: 8.5, opacity: 0.9 }}>
-                    {p.name.split(' ')[0]}
-                  </span>
-                </button>))}
-            </div>
-          </div>)}
-
-        {/* Curved Wave Mask */}
-        <div className="mobile-landing-wave">
-          <svg viewBox="0 0 500 120" preserveAspectRatio="none">
-            <path d="M 0 0 C 150 100 350 -20 500 60 L 500 120 L 0 120 Z" fill="#ffffff"/>
-          </svg>
-        </div>
-      </div>
-
-      {/* ── Main Body Content ── */}
-      <div className="mobile-landing-body">
-        {/* Accreditation Badges */}
-        <div className="mobile-accreditation-row">
-          <div className="accreditation-pill"><Award size={13}/> NAAC A+ Grade</div>
-          <div className="accreditation-pill"><ShieldCheck size={13}/> NBA Accredited</div>
-          <div className="accreditation-pill"><GraduationCap size={13}/> Anna University</div>
-        </div>
-
-        {/* Module Features Grid */}
-        <div className="mobile-landing-section-title">
-          <h2>Core Academic Features</h2>
-        </div>
-
-        <div className="mobile-features-grid">
-          <div className="mobile-feature-card" onClick={() => onOpenLogin(false)}>
-            <div className="feature-icon-box" style={{ background: '#e0e7ff', color: '#4338ca' }}>
-              <Zap size={22}/>
-            </div>
-            <h3>AI Tutor Assistant</h3>
-            <p>24/7 intelligent AI tutoring for circuit analysis, power systems, and exam prep.</p>
-          </div>
-
-          <div className="mobile-feature-card" onClick={() => onOpenLogin(false)}>
-            <div className="feature-icon-box" style={{ background: '#dcfce7', color: '#16a34a' }}>
-              <UserCheck size={22}/>
-            </div>
-            <h3>Live Attendance Logs</h3>
-            <p>Real-time subject-wise attendance tracking with shortfall warning alerts.</p>
-          </div>
-
-          <div className="mobile-feature-card" onClick={() => onOpenLogin(false)}>
-            <div className="feature-icon-box" style={{ background: '#fef3c7', color: '#d97706' }}>
-              <FileText size={22}/>
-            </div>
-            <h3>Instant OD Request Form</h3>
-            <p>Submit On-Duty requests with automated PDF generation for tutor approvals.</p>
-          </div>
-
-          <div className="mobile-feature-card" onClick={() => onOpenLogin(false)}>
-            <div className="feature-icon-box" style={{ background: '#fae8ff', color: '#c084fc' }}>
-              <BookOpen size={22}/>
-            </div>
-            <h3>CGPA &amp; Grade Vault</h3>
-            <p>Calculate current semester GPAs and simulate target internal marks.</p>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mobile-landing-footer">
-          <p>© 2026 TutorWard · Sri Ramakrishna Engineering College</p>
-        </div>
-      </div>
-    </div>);
+    return (_jsxs("div", { className: "mobile-landing-wrapper", children: [_jsxs("div", { className: "mobile-landing-hero", children: [_jsxs("div", { className: "mobile-landing-brand-badge", children: [_jsx("div", { className: "mobile-landing-logo-box", children: _jsx("img", { src: appLogo, alt: "TutorWard Logo", className: "mobile-landing-logo-img" }) }), _jsx("span", { className: "mobile-landing-tag", children: "DEPT OF EEE \u00B7 SREC" })] }), _jsx("h1", { className: "mobile-landing-title", children: "TutorWard" }), _jsx("p", { className: "mobile-landing-subtitle", children: "LEARN \u00B7 GROW \u00B7 SUCCEED" }), _jsx("p", { className: "mobile-landing-desc", children: "Smart Academic & Attendance Management Hub for Electrical & Electronics Engineering Students." }), _jsxs("div", { className: "mobile-landing-cta-group", children: [_jsxs("button", { className: "mobile-primary-pill-btn", onClick: () => onOpenLogin(false), children: ["Sign In ", _jsx(ArrowRight, { size: 16 })] }), _jsx("button", { className: "mobile-secondary-pill-btn", onClick: () => onOpenLogin(true), children: "Create Account" })] }), demoProfiles && onDemoLogin && (_jsxs("div", { style: { marginTop: 14, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 5, position: 'relative' }, children: [_jsx("span", { style: { fontSize: 9.5, fontWeight: 900, color: 'rgba(255,255,255,0.85)', letterSpacing: 0.8, textTransform: 'uppercase' }, children: "\u26A1 QUICK DEV DEMO ACCESS" }), _jsx("div", { style: { display: 'flex', gap: 8, width: '100%', maxWidth: 320 }, children: demoProfiles.map((p, idx) => (_jsxs("button", { onClick: () => onDemoLogin(p), style: {
+                                        flex: 1,
+                                        background: p.role === 'teacher' ? 'rgba(234, 88, 12, 0.85)' : 'rgba(37, 99, 235, 0.85)',
+                                        backdropFilter: 'blur(8px)',
+                                        border: '1.5px solid rgba(255,255,255,0.4)',
+                                        color: '#ffffff',
+                                        padding: '8px 6px',
+                                        borderRadius: 12,
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        boxShadow: '0 4px 14px rgba(0,0,0,0.25)'
+                                    }, children: [_jsx("span", { style: { fontSize: 10, fontWeight: 900 }, children: p.role === 'teacher' ? '👨‍🏫 Demo Staff' : '🎓 Demo Student' }), _jsx("span", { style: { fontSize: 8.5, opacity: 0.9 }, children: p.name.split(' ')[0] })] }, idx))) })] })), _jsx("div", { className: "mobile-landing-wave", children: _jsx("svg", { viewBox: "0 0 500 120", preserveAspectRatio: "none", children: _jsx("path", { d: "M 0 0 C 150 100 350 -20 500 60 L 500 120 L 0 120 Z", fill: "#ffffff" }) }) })] }), _jsxs("div", { className: "mobile-landing-body", children: [_jsxs("div", { className: "mobile-accreditation-row", children: [_jsxs("div", { className: "accreditation-pill", children: [_jsx(Award, { size: 13 }), " NAAC A+ Grade"] }), _jsxs("div", { className: "accreditation-pill", children: [_jsx(ShieldCheck, { size: 13 }), " NBA Accredited"] }), _jsxs("div", { className: "accreditation-pill", children: [_jsx(GraduationCap, { size: 13 }), " Anna University"] })] }), _jsx("div", { className: "mobile-landing-section-title", children: _jsx("h2", { children: "Core Academic Features" }) }), _jsxs("div", { className: "mobile-features-grid", children: [_jsxs("div", { className: "mobile-feature-card", onClick: () => onOpenLogin(false), children: [_jsx("div", { className: "feature-icon-box", style: { background: '#e0e7ff', color: '#4338ca' }, children: _jsx(Zap, { size: 22 }) }), _jsx("h3", { children: "AI Tutor Assistant" }), _jsx("p", { children: "24/7 intelligent AI tutoring for circuit analysis, power systems, and exam prep." })] }), _jsxs("div", { className: "mobile-feature-card", onClick: () => onOpenLogin(false), children: [_jsx("div", { className: "feature-icon-box", style: { background: '#dcfce7', color: '#16a34a' }, children: _jsx(UserCheck, { size: 22 }) }), _jsx("h3", { children: "Live Attendance Logs" }), _jsx("p", { children: "Real-time subject-wise attendance tracking with shortfall warning alerts." })] }), _jsxs("div", { className: "mobile-feature-card", onClick: () => onOpenLogin(false), children: [_jsx("div", { className: "feature-icon-box", style: { background: '#fef3c7', color: '#d97706' }, children: _jsx(FileText, { size: 22 }) }), _jsx("h3", { children: "Instant OD Request Form" }), _jsx("p", { children: "Submit On-Duty requests with automated PDF generation for tutor approvals." })] }), _jsxs("div", { className: "mobile-feature-card", onClick: () => onOpenLogin(false), children: [_jsx("div", { className: "feature-icon-box", style: { background: '#fae8ff', color: '#c084fc' }, children: _jsx(BookOpen, { size: 22 }) }), _jsx("h3", { children: "CGPA & Grade Vault" }), _jsx("p", { children: "Calculate current semester GPAs and simulate target internal marks." })] })] }), _jsx("div", { className: "mobile-landing-footer", children: _jsx("p", { children: "\u00A9 2026 TutorWard \u00B7 Sri Ramakrishna Engineering College" }) })] })] }));
 };

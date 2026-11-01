@@ -4,9 +4,7 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      include: /\.(jsx|js)$/,
-    }),
+    react(),
     {
       name: 'apk-mime-type',
       configureServer(server) {
@@ -20,13 +18,4 @@ export default defineConfig({
       }
     }
   ],
-  oxc: {
-    include: /\.(m?ts|[jt]sx?)$/,
-    exclude: /node_modules/,
-  },
-  rolldownOptions: {
-    moduleTypes: {
-      '.js': 'jsx',
-    },
-  },
 });

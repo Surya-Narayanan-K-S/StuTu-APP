@@ -1,3 +1,4 @@
+import { jsxs as _jsxs, jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Send, Sparkles, AlertCircle, Bot } from 'lucide-react';
@@ -139,197 +140,101 @@ export const AIChatbot = ({ isFullPage = false }) => {
         }
     };
     if (isFullPage) {
-        return (<div className="ai-fullpage-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 10 }}>
-        {/* Quick Suggestion Chips */}
-        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-          {['CAT-1 Dates', 'Power Electronics', 'GATE Roadmap', 'Placements'].map((topic, i) => (<button key={i} type="button" className="btn-secondary" style={{ fontSize: 10, padding: '4px 10px', borderRadius: 20, whiteSpace: 'nowrap', flexShrink: 0 }} onClick={() => { setInputValue(topic); }}>
-              ✨ {topic}
-            </button>))}
-        </div>
-
-        {/* Messages Container */}
-        <div className="chatbot-body" style={{ flex: 1, borderRadius: 16, border: '1px solid var(--card-border)' }}>
-          {messages.map((msg, idx) => (<div key={idx} className={`chat-bubble-container ${msg.role}`}>
-              <div className={`chat-bubble ${msg.role}`}>
-                <p style={{ margin: 0, whiteSpace: 'pre-line' }}>{msg.content}</p>
-              </div>
-            </div>))}
-
-          {isLoading && (<div className="chat-bubble-container bot">
-              <div className="chat-bubble bot typing">
-                <span className="dot"/>
-                <span className="dot"/>
-                <span className="dot"/>
-              </div>
-            </div>)}
-          <div ref={messagesEndRef}/>
-        </div>
-
-        {/* Input Footer */}
-        <form className="chatbot-footer" onSubmit={handleSendMessage} style={{ borderRadius: 16 }}>
-          <input type="text" placeholder="Ask about syllabus, CAT exams, placements..." value={inputValue} onChange={e => setInputValue(e.target.value)} className="chatbot-input" disabled={isLoading}/>
-          <button type="submit" className="chatbot-send-btn" disabled={!inputValue.trim() || isLoading}>
-            <Send size={14}/>
-          </button>
-        </form>
-      </div>);
+        return (_jsxs("div", { className: "ai-fullpage-container", style: { display: 'flex', flexDirection: 'column', height: '100%', gap: 10 }, children: [_jsx("div", { style: { display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }, children: ['CAT-1 Dates', 'Power Electronics', 'GATE Roadmap', 'Placements'].map((topic, i) => (_jsxs("button", { type: "button", className: "btn-secondary", style: { fontSize: 10, padding: '4px 10px', borderRadius: 20, whiteSpace: 'nowrap', flexShrink: 0 }, onClick: () => { setInputValue(topic); }, children: ["\u2728 ", topic] }, i))) }), _jsxs("div", { className: "chatbot-body", style: { flex: 1, borderRadius: 16, border: '1px solid var(--card-border)' }, children: [messages.map((msg, idx) => (_jsx("div", { className: `chat-bubble-container ${msg.role}`, children: _jsx("div", { className: `chat-bubble ${msg.role}`, children: _jsx("p", { style: { margin: 0, whiteSpace: 'pre-line' }, children: msg.content }) }) }, idx))), isLoading && (_jsx("div", { className: "chat-bubble-container bot", children: _jsxs("div", { className: "chat-bubble bot typing", children: [_jsx("span", { className: "dot" }), _jsx("span", { className: "dot" }), _jsx("span", { className: "dot" })] }) })), _jsx("div", { ref: messagesEndRef })] }), _jsxs("form", { className: "chatbot-footer", onSubmit: handleSendMessage, style: { borderRadius: 16 }, children: [_jsx("input", { type: "text", placeholder: "Ask about syllabus, CAT exams, placements...", value: inputValue, onChange: e => setInputValue(e.target.value), className: "chatbot-input", disabled: isLoading }), _jsx("button", { type: "submit", className: "chatbot-send-btn", disabled: !inputValue.trim() || isLoading, children: _jsx(Send, { size: 14 }) })] })] }));
     }
-    return createPortal(<>
-      {/* Floating Chat Button */}
-      <button className={`chatbot-float-btn ${isOpen ? 'active' : ''}`} onClick={() => setIsOpen(!isOpen)} title="EEE AI Chatbot" style={{
-            position: 'fixed',
-            bottom: 96,
-            right: 20,
-            zIndex: 99999,
-            width: 54,
-            height: 54,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0052cc 0%, #7c3aed 100%)',
-            color: '#ffffff',
-            border: '2.5px solid #ffffff',
-            boxShadow: '0 8px 28px rgba(124, 58, 237, 0.45)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            transform: isOpen ? 'rotate(90deg) scale(1.05)' : 'scale(1)'
-        }}>
-        {isOpen ? (<X size={22}/>) : (<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <Bot size={26}/>
-            <Sparkles size={12} style={{ position: 'absolute', top: -6, right: -6, color: '#fbbf24' }} fill="#fbbf24"/>
-          </div>)}
-        {!isOpen && (<span style={{
-                position: 'absolute',
-                top: -4,
-                right: -4,
-                background: '#ef4444',
-                color: '#ffffff',
-                fontSize: 9,
-                fontWeight: 900,
-                padding: '2px 6px',
-                borderRadius: 99,
-                border: '1.5px solid #ffffff'
-            }}>
-            AI
-          </span>)}
-      </button>
-
-      {/* Collapsible Chat Window */}
-      {isOpen && (<div style={{
-                position: 'fixed',
-                bottom: 160,
-                right: 20,
-                width: 'min(92vw, 380px)',
-                height: 'min(500px, 65vh)',
-                background: '#ffffff',
-                borderRadius: 24,
-                boxShadow: '0 20px 48px rgba(0, 0, 0, 0.25)',
-                border: '1.5px solid rgba(0, 82, 204, 0.15)',
-                zIndex: 99999,
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-                animation: 'fluidTabSpring 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
-            }}>
-          {/* Header */}
-          <div style={{
-                background: 'linear-gradient(135deg, #0052cc 0%, #7c3aed 100%)',
-                padding: '16px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                color: '#ffffff'
-            }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Bot size={20}/>
-              </div>
-              <div>
-                <h4 style={{ fontSize: 13.5, fontWeight: 900, color: '#ffffff', margin: 0 }}>EEE Scholar AI</h4>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>
-                  {hasApiKey ? '✨ Powered by Gemini AI' : '⚡ Offline Assistant Mode'}
-                </span>
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#ffffff', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <X size={16}/>
-            </button>
-          </div>
-
-          {/* Messages Container */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 10, background: '#f8fafc' }}>
-            {!hasApiKey && (<div style={{ background: '#fef3c7', color: '#b45309', padding: '8px 12px', borderRadius: 12, fontSize: 11, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
-                <AlertCircle size={14} style={{ flexShrink: 0 }}/>
-                <span>Offline mode. Add Gemini API key in .env for full conversational reasoning.</span>
-              </div>)}
-
-            {messages.map((msg, idx) => (<div key={idx} style={{
+    return createPortal(_jsxs(_Fragment, { children: [_jsxs("button", { className: `chatbot-float-btn ${isOpen ? 'active' : ''}`, onClick: () => setIsOpen(!isOpen), title: "EEE AI Chatbot", style: {
+                    position: 'fixed',
+                    bottom: 96,
+                    right: 20,
+                    zIndex: 99999,
+                    width: 54,
+                    height: 54,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #0052cc 0%, #7c3aed 100%)',
+                    color: '#ffffff',
+                    border: '2.5px solid #ffffff',
+                    boxShadow: '0 8px 28px rgba(124, 58, 237, 0.45)',
                     display: 'flex',
-                    justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start'
-                }}>
-                <div style={{
-                    maxWidth: '82%',
-                    padding: '10px 14px',
-                    borderRadius: 16,
-                    fontSize: 12,
-                    lineHeight: 1.45,
-                    fontWeight: 500,
-                    background: msg.role === 'user' ? 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)' : '#ffffff',
-                    color: msg.role === 'user' ? '#ffffff' : 'var(--text-main)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                    border: msg.role === 'user' ? 'none' : '1px solid #e2e8f0',
-                    whiteSpace: 'pre-line'
-                }}>
-                  {msg.content}
-                </div>
-              </div>))}
-
-            {isLoading && (<div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <div style={{ padding: '8px 14px', borderRadius: 16, background: '#ffffff', border: '1px solid #e2e8f0', display: 'flex', gap: 4, alignItems: 'center' }}>
-                  <span className="dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#0052cc', animation: 'pulse 1s infinite' }}/>
-                  <span className="dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#7c3aed', animation: 'pulse 1s infinite 0.2s' }}/>
-                  <span className="dot" style={{ width: 6, height: 6, borderRadius: '50%', background: '#38bdf8', animation: 'pulse 1s infinite 0.4s' }}/>
-                </div>
-              </div>)}
-            <div ref={messagesEndRef}/>
-          </div>
-
-          {/* Input Footer */}
-          <form onSubmit={handleSendMessage} style={{
-                padding: '12px 14px',
-                background: '#ffffff',
-                borderTop: '1px solid #e2e8f0',
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center'
-            }}>
-            <input type="text" placeholder="Ask anything about syllabus, exams..." value={inputValue} onChange={e => setInputValue(e.target.value)} disabled={isLoading} style={{
-                flex: 1,
-                padding: '10px 14px',
-                borderRadius: 14,
-                border: '1.5px solid #cbd5e1',
-                fontSize: 12,
-                outline: 'none',
-                background: '#f8fafc'
-            }}/>
-            <button type="submit" disabled={!inputValue.trim() || isLoading} style={{
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                border: 'none',
-                background: 'linear-gradient(135deg, #0052cc 0%, #7c3aed 100%)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
-                opacity: inputValue.trim() ? 1 : 0.6,
-                boxShadow: '0 4px 12px rgba(0,82,204,0.3)'
-            }}>
-              <Send size={15}/>
-            </button>
-          </form>
-        </div>)}
-    </>, document.body);
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: isOpen ? 'rotate(90deg) scale(1.05)' : 'scale(1)'
+                }, children: [isOpen ? (_jsx(X, { size: 22 })) : (_jsxs("div", { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }, children: [_jsx(Bot, { size: 26 }), _jsx(Sparkles, { size: 12, style: { position: 'absolute', top: -6, right: -6, color: '#fbbf24' }, fill: "#fbbf24" })] })), !isOpen && (_jsx("span", { style: {
+                            position: 'absolute',
+                            top: -4,
+                            right: -4,
+                            background: '#ef4444',
+                            color: '#ffffff',
+                            fontSize: 9,
+                            fontWeight: 900,
+                            padding: '2px 6px',
+                            borderRadius: 99,
+                            border: '1.5px solid #ffffff'
+                        }, children: "AI" }))] }), isOpen && (_jsxs("div", { style: {
+                    position: 'fixed',
+                    bottom: 160,
+                    right: 20,
+                    width: 'min(92vw, 380px)',
+                    height: 'min(500px, 65vh)',
+                    background: '#ffffff',
+                    borderRadius: 24,
+                    boxShadow: '0 20px 48px rgba(0, 0, 0, 0.25)',
+                    border: '1.5px solid rgba(0, 82, 204, 0.15)',
+                    zIndex: 99999,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                    animation: 'fluidTabSpring 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards'
+                }, children: [_jsxs("div", { style: {
+                            background: 'linear-gradient(135deg, #0052cc 0%, #7c3aed 100%)',
+                            padding: '16px 18px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            color: '#ffffff'
+                        }, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: 10 }, children: [_jsx("div", { style: { width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }, children: _jsx(Bot, { size: 20 }) }), _jsxs("div", { children: [_jsx("h4", { style: { fontSize: 13.5, fontWeight: 900, color: '#ffffff', margin: 0 }, children: "EEE Scholar AI" }), _jsx("span", { style: { fontSize: 10, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }, children: hasApiKey ? '✨ Powered by Gemini AI' : '⚡ Offline Assistant Mode' })] })] }), _jsx("button", { onClick: () => setIsOpen(false), style: { background: 'rgba(255,255,255,0.15)', border: 'none', color: '#ffffff', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }, children: _jsx(X, { size: 16 }) })] }), _jsxs("div", { style: { flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 10, background: '#f8fafc' }, children: [!hasApiKey && (_jsxs("div", { style: { background: '#fef3c7', color: '#b45309', padding: '8px 12px', borderRadius: 12, fontSize: 11, display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }, children: [_jsx(AlertCircle, { size: 14, style: { flexShrink: 0 } }), _jsx("span", { children: "Offline mode. Add Gemini API key in .env for full conversational reasoning." })] })), messages.map((msg, idx) => (_jsx("div", { style: {
+                                    display: 'flex',
+                                    justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start'
+                                }, children: _jsx("div", { style: {
+                                        maxWidth: '82%',
+                                        padding: '10px 14px',
+                                        borderRadius: 16,
+                                        fontSize: 12,
+                                        lineHeight: 1.45,
+                                        fontWeight: 500,
+                                        background: msg.role === 'user' ? 'linear-gradient(135deg, #0052cc 0%, #2563eb 100%)' : '#ffffff',
+                                        color: msg.role === 'user' ? '#ffffff' : 'var(--text-main)',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                                        border: msg.role === 'user' ? 'none' : '1px solid #e2e8f0',
+                                        whiteSpace: 'pre-line'
+                                    }, children: msg.content }) }, idx))), isLoading && (_jsx("div", { style: { display: 'flex', justifyContent: 'flex-start' }, children: _jsxs("div", { style: { padding: '8px 14px', borderRadius: 16, background: '#ffffff', border: '1px solid #e2e8f0', display: 'flex', gap: 4, alignItems: 'center' }, children: [_jsx("span", { className: "dot", style: { width: 6, height: 6, borderRadius: '50%', background: '#0052cc', animation: 'pulse 1s infinite' } }), _jsx("span", { className: "dot", style: { width: 6, height: 6, borderRadius: '50%', background: '#7c3aed', animation: 'pulse 1s infinite 0.2s' } }), _jsx("span", { className: "dot", style: { width: 6, height: 6, borderRadius: '50%', background: '#38bdf8', animation: 'pulse 1s infinite 0.4s' } })] }) })), _jsx("div", { ref: messagesEndRef })] }), _jsxs("form", { onSubmit: handleSendMessage, style: {
+                            padding: '12px 14px',
+                            background: '#ffffff',
+                            borderTop: '1px solid #e2e8f0',
+                            display: 'flex',
+                            gap: 8,
+                            alignItems: 'center'
+                        }, children: [_jsx("input", { type: "text", placeholder: "Ask anything about syllabus, exams...", value: inputValue, onChange: e => setInputValue(e.target.value), disabled: isLoading, style: {
+                                    flex: 1,
+                                    padding: '10px 14px',
+                                    borderRadius: 14,
+                                    border: '1.5px solid #cbd5e1',
+                                    fontSize: 12,
+                                    outline: 'none',
+                                    background: '#f8fafc'
+                                } }), _jsx("button", { type: "submit", disabled: !inputValue.trim() || isLoading, style: {
+                                    width: 38,
+                                    height: 38,
+                                    borderRadius: 12,
+                                    border: 'none',
+                                    background: 'linear-gradient(135deg, #0052cc 0%, #7c3aed 100%)',
+                                    color: '#ffffff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
+                                    opacity: inputValue.trim() ? 1 : 0.6,
+                                    boxShadow: '0 4px 12px rgba(0,82,204,0.3)'
+                                }, children: _jsx(Send, { size: 15 }) })] })] }))] }), document.body);
 };

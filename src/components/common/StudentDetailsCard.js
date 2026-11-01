@@ -1,3 +1,4 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React, { useState, useEffect } from 'react';
 import { Award, GraduationCap, UserCheck, ChevronRight, ShieldCheck, Calendar, Hash, Layers } from 'lucide-react';
 import { dbService } from '../../services/db';
@@ -47,79 +48,5 @@ export const StudentDetailsCard = ({ currentUser, onOpenProfile, onOpenTab }) =>
         fetchDbData();
         return () => { isMounted = false; };
     }, [currentUser]);
-    return (<div className="mobile-vip-student-card">
-      {/* Top Identity Header */}
-      <div className="vip-card-header">
-        <div className="vip-avatar-wrap">
-          <div className="vip-avatar-circle">
-            {name.charAt(0)}
-          </div>
-          <span className="vip-online-badge"/>
-        </div>
-
-        <div className="vip-user-info">
-          <div className="vip-name-row">
-            <h2 className="vip-student-name">{name}</h2>
-            <span className={`vip-role-tag ${isAdmin ? 'admin' : 'student'}`}>
-              <ShieldCheck size={11}/> {isAdmin ? 'Faculty Admin' : 'UG Scholar'}
-            </span>
-          </div>
-          <p className="vip-dept-text">{department} · SREC</p>
-        </div>
-
-        <button className="vip-vault-btn" onClick={onOpenProfile} aria-label="Open Document Vault">
-          <span>Doc Vault</span>
-          <ChevronRight size={14}/>
-        </button>
-      </div>
-
-      {/* Detail Chips Row */}
-      {!isAdmin && (<div className="vip-chips-row">
-          <div className="vip-chip">
-            <Hash size={12} className="vip-chip-icon"/>
-            <span>{rollNo}</span>
-          </div>
-          <div className="vip-chip">
-            <Layers size={12} className="vip-chip-icon"/>
-            <span>{className}</span>
-          </div>
-          <div className="vip-chip">
-            <Calendar size={12} className="vip-chip-icon"/>
-            <span>{yearOfStudy} · {semester}</span>
-          </div>
-        </div>)}
-
-      {/* Academic Metrics Grid (Attendance, CGPA, NPTEL) */}
-      {!isAdmin && (<div className="vip-metrics-grid">
-          <div className="vip-metric-box" onClick={() => onOpenTab('attendance')}>
-            <div className="vip-metric-icon" style={{ background: 'rgba(22, 163, 74, 0.2)', color: '#4ade80' }}>
-              <UserCheck size={14}/>
-            </div>
-            <div className="vip-metric-data">
-              <span className="vip-metric-val">{dbMetrics.attendance}</span>
-              <span className="vip-metric-label">Attendance</span>
-            </div>
-          </div>
-
-          <div className="vip-metric-box" onClick={() => onOpenTab('academics')}>
-            <div className="vip-metric-icon" style={{ background: 'rgba(99, 102, 241, 0.25)', color: '#818cf8' }}>
-              <GraduationCap size={14}/>
-            </div>
-            <div className="vip-metric-data">
-              <span className="vip-metric-val">{dbMetrics.cgpa}</span>
-              <span className="vip-metric-label">CGPA</span>
-            </div>
-          </div>
-
-          <div className="vip-metric-box" onClick={() => onOpenTab('nptel')}>
-            <div className="vip-metric-icon" style={{ background: 'rgba(217, 119, 6, 0.2)', color: '#fbbf24' }}>
-              <Award size={14}/>
-            </div>
-            <div className="vip-metric-data">
-              <span className="vip-metric-val">{dbMetrics.nptelCerts}</span>
-              <span className="vip-metric-label">NPTEL</span>
-            </div>
-          </div>
-        </div>)}
-    </div>);
+    return (_jsxs("div", { className: "mobile-vip-student-card", children: [_jsxs("div", { className: "vip-card-header", children: [_jsxs("div", { className: "vip-avatar-wrap", children: [_jsx("div", { className: "vip-avatar-circle", children: name.charAt(0) }), _jsx("span", { className: "vip-online-badge" })] }), _jsxs("div", { className: "vip-user-info", children: [_jsxs("div", { className: "vip-name-row", children: [_jsx("h2", { className: "vip-student-name", children: name }), _jsxs("span", { className: `vip-role-tag ${isAdmin ? 'admin' : 'student'}`, children: [_jsx(ShieldCheck, { size: 11 }), " ", isAdmin ? 'Faculty Admin' : 'UG Scholar'] })] }), _jsxs("p", { className: "vip-dept-text", children: [department, " \u00B7 SREC"] })] }), _jsxs("button", { className: "vip-vault-btn", onClick: onOpenProfile, "aria-label": "Open Document Vault", children: [_jsx("span", { children: "Doc Vault" }), _jsx(ChevronRight, { size: 14 })] })] }), !isAdmin && (_jsxs("div", { className: "vip-chips-row", children: [_jsxs("div", { className: "vip-chip", children: [_jsx(Hash, { size: 12, className: "vip-chip-icon" }), _jsx("span", { children: rollNo })] }), _jsxs("div", { className: "vip-chip", children: [_jsx(Layers, { size: 12, className: "vip-chip-icon" }), _jsx("span", { children: className })] }), _jsxs("div", { className: "vip-chip", children: [_jsx(Calendar, { size: 12, className: "vip-chip-icon" }), _jsxs("span", { children: [yearOfStudy, " \u00B7 ", semester] })] })] })), !isAdmin && (_jsxs("div", { className: "vip-metrics-grid", children: [_jsxs("div", { className: "vip-metric-box", onClick: () => onOpenTab('attendance'), children: [_jsx("div", { className: "vip-metric-icon", style: { background: 'rgba(22, 163, 74, 0.2)', color: '#4ade80' }, children: _jsx(UserCheck, { size: 14 }) }), _jsxs("div", { className: "vip-metric-data", children: [_jsx("span", { className: "vip-metric-val", children: dbMetrics.attendance }), _jsx("span", { className: "vip-metric-label", children: "Attendance" })] })] }), _jsxs("div", { className: "vip-metric-box", onClick: () => onOpenTab('academics'), children: [_jsx("div", { className: "vip-metric-icon", style: { background: 'rgba(99, 102, 241, 0.25)', color: '#818cf8' }, children: _jsx(GraduationCap, { size: 14 }) }), _jsxs("div", { className: "vip-metric-data", children: [_jsx("span", { className: "vip-metric-val", children: dbMetrics.cgpa }), _jsx("span", { className: "vip-metric-label", children: "CGPA" })] })] }), _jsxs("div", { className: "vip-metric-box", onClick: () => onOpenTab('nptel'), children: [_jsx("div", { className: "vip-metric-icon", style: { background: 'rgba(217, 119, 6, 0.2)', color: '#fbbf24' }, children: _jsx(Award, { size: 14 }) }), _jsxs("div", { className: "vip-metric-data", children: [_jsx("span", { className: "vip-metric-val", children: dbMetrics.nptelCerts }), _jsx("span", { className: "vip-metric-label", children: "NPTEL" })] })] })] }))] }));
 };

@@ -1286,12 +1286,14 @@ export const dbService = {
     // --- Letter Requests ---
     async getLetterRequests(studentEmail) {
         try {
-            const { data, error } = await supabase
-                .from('letter_requests')
-                .select('*');
+            let query = supabase.from('letter_requests').select('*');
+            if (studentEmail) {
+                query = query.eq('student_email', studentEmail);
+            }
+            const { data, error } = await query;
             if (error)
                 throw error;
-            const list = (data || []).map(d => ({
+            return (data || []).map(d => ({
                 id: d.id,
                 studentEmail: d.student_email,
                 studentName: d.student_name,
@@ -1304,10 +1306,6 @@ export const dbService = {
                 pdfUrl: d.pdf_url,
                 adminRemarks: d.admin_remarks
             }));
-            if (studentEmail) {
-                return list.filter(r => r.studentEmail.toLowerCase() === studentEmail.toLowerCase());
-            }
-            return list;
         }
         catch (err) {
             console.warn('Supabase getLetterRequests failed, using localStorage:', err.message || err);
@@ -1377,12 +1375,14 @@ export const dbService = {
     // --- OD Requests ---
     async getODRequests(studentEmail) {
         try {
-            const { data, error } = await supabase
-                .from('od_requests')
-                .select('*');
+            let query = supabase.from('od_requests').select('*');
+            if (studentEmail) {
+                query = query.eq('student_email', studentEmail);
+            }
+            const { data, error } = await query;
             if (error)
                 throw error;
-            const list = (data || []).map(d => ({
+            return (data || []).map(d => ({
                 id: d.id,
                 studentEmail: d.student_email,
                 studentName: d.student_name,
@@ -1399,10 +1399,6 @@ export const dbService = {
                 pdfUrl: d.pdf_url,
                 adminRemarks: d.admin_remarks
             }));
-            if (studentEmail) {
-                return list.filter(r => r.studentEmail.toLowerCase() === studentEmail.toLowerCase());
-            }
-            return list;
         }
         catch (err) {
             console.warn('Supabase getODRequests failed, using localStorage:', err.message || err);

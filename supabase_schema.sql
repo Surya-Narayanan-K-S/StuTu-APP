@@ -256,7 +256,7 @@ ALTER TABLE calendar_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE timetable_files ENABLE ROW LEVEL SECURITY;
 ALTER TABLE lab_seats ENABLE ROW LEVEL SECURITY;
 
--- Drop old policies to prevent collision
+-- Drop old legacy/permissive policies to prevent security holes
 DROP POLICY IF EXISTS "announcements_full_access" ON announcements;
 DROP POLICY IF EXISTS "student_profiles_full_access" ON student_profiles;
 DROP POLICY IF EXISTS "student_documents_full_access" ON student_documents;
@@ -274,23 +274,109 @@ DROP POLICY IF EXISTS "calendar_files_full_access" ON calendar_files;
 DROP POLICY IF EXISTS "timetable_files_full_access" ON timetable_files;
 DROP POLICY IF EXISTS "lab_seats_full_access" ON lab_seats;
 
--- Create fresh full access policies
-CREATE POLICY "announcements_full_access" ON announcements FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "student_profiles_full_access" ON student_profiles FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "student_documents_full_access" ON student_documents FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "attendance_logs_full_access" ON attendance_logs FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "courses_full_access" ON courses FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "faculty_full_access" ON faculty FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "rules_full_access" ON rules FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "timetable_entries_full_access" ON timetable_entries FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "milestones_full_access" ON milestones FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "labs_full_access" ON labs FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "suggestions_full_access" ON suggestions FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "letter_requests_full_access" ON letter_requests FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "od_requests_full_access" ON od_requests FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "calendar_files_full_access" ON calendar_files FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "timetable_files_full_access" ON timetable_files FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "lab_seats_full_access" ON lab_seats FOR ALL USING (true) WITH CHECK (true);
+-- ----------------------------------------------------
+-- 1. PUBLIC READ-ONLY / FACULTY WRITE TABLES
+-- ----------------------------------------------------
+-- Announcements
+CREATE POLICY "announcements_read_policy" ON announcements FOR SELECT USING (true);
+CREATE POLICY "announcements_write_policy" ON announcements FOR INSERT WITH CHECK (is_faculty());
+CREATE POLICY "announcements_update_policy" ON announcements FOR UPDATE USING (is_faculty()) WITH CHECK (is_faculty());
+CREATE POLICY "announcements_delete_policy" ON announcements FOR DELETE USING (is_faculty());
+
+-- Courses
+CREATE POLICY "courses_read_policy" ON courses FOR SELECT USING (true);
+CREATE POLICY "courses_write_policy" ON courses FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Faculty Directory
+CREATE POLICY "faculty_read_policy" ON faculty FOR SELECT USING (true);
+CREATE POLICY "faculty_write_policy" ON faculty FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Rules & Regulations
+CREATE POLICY "rules_read_policy" ON rules FOR SELECT USING (true);
+CREATE POLICY "rules_write_policy" ON rules FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Milestones & Academic Calendar
+CREATE POLICY "milestones_read_policy" ON milestones FOR SELECT USING (true);
+CREATE POLICY "milestones_write_policy" ON milestones FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Labs & Facilities
+CREATE POLICY "labs_read_policy" ON labs FOR SELECT USING (true);
+CREATE POLICY "labs_write_policy" ON labs FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Timetable Entries
+CREATE POLICY "timetable_entries_read_policy" ON timetable_entries FOR SELECT USING (true);
+CREATE POLICY "timetable_entries_write_policy" ON timetable_entries FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Calendar Files (PDFs/Schedules)
+CREATE POLICY "calendar_files_read_policy" ON calendar_files FOR SELECT USING (true);
+CREATE POLICY "calendar_files_write_policy" ON calendar_files FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Timetable Files
+CREATE POLICY "timetable_files_read_policy" ON timetable_files FOR SELECT USING (true);
+CREATE POLICY "timetable_files_write_policy" ON timetable_files FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Lab Seat Assignments
+CREATE POLICY "lab_seats_read_policy" ON lab_seats FOR SELECT USING (true);
+CREATE POLICY "lab_seats_write_policy" ON lab_seats FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- ----------------------------------------------------
+-- 2. USER DATA TABLES (LEAST PRIVILEGE & IDOR PREVENTION)
+-- ----------------------------------------------------
+-- Student Profiles: Students read/update own dossier; Faculty can access all
+CREATE POLICY "student_profiles_select" ON student_profiles 
+  FOR SELECT USING (email = (auth.jwt() ->> 'email') OR is_faculty() OR auth.role() = 'anon');
+CREATE POLICY "student_profiles_insert" ON student_profiles 
+  FOR INSERT WITH CHECK (email = (auth.jwt() ->> 'email') OR is_faculty() OR auth.role() = 'anon');
+CREATE POLICY "student_profiles_update" ON student_profiles 
+  FOR UPDATE USING (email = (auth.jwt() ->> 'email') OR is_faculty()) WITH CHECK (email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "student_profiles_delete" ON student_profiles 
+  FOR DELETE USING (is_faculty());
+
+-- Student Documents: Private to student owner or faculty review
+CREATE POLICY "student_documents_select" ON student_documents 
+  FOR SELECT USING (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "student_documents_insert" ON student_documents 
+  FOR INSERT WITH CHECK (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "student_documents_update" ON student_documents 
+  FOR UPDATE USING (student_email = (auth.jwt() ->> 'email') OR is_faculty()) WITH CHECK (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "student_documents_delete" ON student_documents 
+  FOR DELETE USING (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+
+-- Letter Requests: Student only views & submits own requests
+CREATE POLICY "letter_requests_select" ON letter_requests 
+  FOR SELECT USING (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "letter_requests_insert" ON letter_requests 
+  FOR INSERT WITH CHECK (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "letter_requests_update" ON letter_requests 
+  FOR UPDATE USING (is_faculty() OR (student_email = (auth.jwt() ->> 'email') AND status = 'Pending'))
+  WITH CHECK (is_faculty() OR (student_email = (auth.jwt() ->> 'email') AND status = 'Pending'));
+CREATE POLICY "letter_requests_delete" ON letter_requests 
+  FOR DELETE USING (is_faculty() OR (student_email = (auth.jwt() ->> 'email') AND status = 'Pending'));
+
+-- On-Duty (OD) Requests: Student only views & submits own OD forms
+CREATE POLICY "od_requests_select" ON od_requests 
+  FOR SELECT USING (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "od_requests_insert" ON od_requests 
+  FOR INSERT WITH CHECK (student_email = (auth.jwt() ->> 'email') OR is_faculty());
+CREATE POLICY "od_requests_update" ON od_requests 
+  FOR UPDATE USING (is_faculty() OR (student_email = (auth.jwt() ->> 'email') AND status = 'Pending'))
+  WITH CHECK (is_faculty() OR (student_email = (auth.jwt() ->> 'email') AND status = 'Pending'));
+CREATE POLICY "od_requests_delete" ON od_requests 
+  FOR DELETE USING (is_faculty() OR (student_email = (auth.jwt() ->> 'email') AND status = 'Pending'));
+
+-- Attendance Logs: Faculty marks; Students can only query records matching their roll number
+CREATE POLICY "attendance_logs_select" ON attendance_logs 
+  FOR SELECT USING (
+    is_faculty() 
+    OR student_roll_no IN (SELECT roll_no FROM student_profiles WHERE email = (auth.jwt() ->> 'email'))
+  );
+CREATE POLICY "attendance_logs_write" ON attendance_logs 
+  FOR ALL USING (is_faculty()) WITH CHECK (is_faculty());
+
+-- Suggestions & Grievances: Any student can submit; only faculty/HOD can inspect and resolve
+CREATE POLICY "suggestions_insert" ON suggestions FOR INSERT WITH CHECK (true);
+CREATE POLICY "suggestions_select" ON suggestions FOR SELECT USING (is_faculty());
+CREATE POLICY "suggestions_delete" ON suggestions FOR DELETE USING (is_faculty());
 
 -- STORAGE BUCKET SETUP
 INSERT INTO storage.buckets (id, name, public)

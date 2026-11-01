@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, BookOpen, Calendar, GraduationCap, Award, UserCheck, Inbox, Zap, Map, Shield, Phone, CheckSquare } from 'lucide-react';
+import { Sparkles, BookOpen, Calendar, GraduationCap, Award, UserCheck, Inbox, Zap, Map, Shield, Phone, CheckSquare, Bug } from 'lucide-react';
 export const APP_CATEGORIES = [
     {
         title: '🎓 ACADEMIC HUB',
@@ -27,6 +27,7 @@ export const APP_CATEGORIES = [
             { key: 'attendance', label: 'Attendance', icon: React.createElement(UserCheck, { size: 24 }), color: '#ff5f1f', bg: 'rgba(255, 95, 31, 0.12)' },
             { key: 'lab-finder', label: 'Lab Finder', icon: React.createElement(Map, { size: 24 }), color: '#d97706', bg: 'rgba(217, 119, 6, 0.12)' },
             { key: 'suggestion', label: 'Suggestions', icon: React.createElement(Inbox, { size: 24 }), color: '#ea580c', bg: 'rgba(234, 88, 12, 0.12)' },
+            { key: 'bug-report', label: 'Report Bug', icon: React.createElement(Bug, { size: 24 }), color: '#e11d48', bg: 'rgba(225, 29, 72, 0.12)' },
         ]
     },
     {

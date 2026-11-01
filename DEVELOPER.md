@@ -147,3 +147,4 @@ npm run electron:start
 npm run electron:build
 ```
 The output executable will be placed in the `dist/` folder.
+

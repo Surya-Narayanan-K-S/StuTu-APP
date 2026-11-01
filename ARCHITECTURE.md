@@ -144,3 +144,4 @@ The application is structured to ensure 100% uptime for students even under poor
 - When network is connected, Supabase updates seamlessly.
 - If network drops or Supabase credentials are unavailable during offline lab sessions, `db.js` stores updates in `localStorage` under namespaced keys (`eee_students`, `eee_letter_requests`, `eee_od_requests`).
 - Upon connection restoration, the user can continue without application crashes or white-screens.
+
